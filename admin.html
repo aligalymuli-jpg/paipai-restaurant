@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Админ Панель | Pai Pai</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-panel {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #111;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+        }
+        
+        input,
+        select {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+        }
+        
+        .item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #222;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        .btn-del {
+            color: #ff4d4d;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-panel">
+        <a href="index.html" style="color: var(--primary); text-decoration: none;">← На сайт</a>
+        <h2 style="margin: 20px 0;">Добавить товар</h2>
+
+        <input type="text" id="p-name" placeholder="Название">
+        <input type="number" id="p-price" placeholder="Цена (₸)">
+        <input type="text" id="p-img" placeholder="URL картинки">
+        <select id="p-cat">
+            <option value="first">Первые блюда</option>
+            <option value="second">Вторые блюда</option>
+            <option value="salad">Салаты</option>
+            <option value="company">На компанию</option>
+            <option value="bakery">Выпечка</option>
+            <option value="dessert">Десерты</option>
+            <option value="coffee">Кофе / Напитки</option>
+        </select>
+        <button onclick="save()" class="btn-primary" style="width: 100%;">Добавить блюдо</button>
+
+        <h3 style="margin-top: 30px;">Список товаров:</h3>
+        <div id="admin-list"></div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('paipai_db')) || [];
+
+        function render() {
+            const list = document.getElementById('admin-list');
+            list.innerHTML = '';
+            db.forEach((item, index) => {
+                list.innerHTML += `
+                    <div class="item-row">
+                        <img src="${item.img}" width="40" height="40" style="border-radius: 5px; object-fit: cover;">
+                        <span style="font-size: 0.8rem;">${item.name} - ${item.price}₸</span>
+                        <span class="btn-del" onclick="remove(${index})">Удалить</span>
+                    </div>
+                `;
+            });
+            localStorage.setItem('paipai_db', JSON.stringify(db));
+        }
+
+        function save() {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const img = document.getElementById('p-img').value;
+            const cat = document.getElementById('p-cat').value;
+            if (name && price && img) {
+                db.push({
+                    id: Date.now(),
+                    name,
+                    price: parseInt(price),
+                    img,
+                    cat
+                });
+                render();
+                document.getElementById('p-name').value = '';
+                document.getElementById('p-price').value = '';
+                document.getElementById('p-img').value = '';
+            }
+        }
+
+        function remove(i) {
+            if (confirm("Удалить?")) {
+                db.splice(i, 1);
+                render();
+            }
+        }
+        render();
+    </script>
+</body>
+
+</html>
