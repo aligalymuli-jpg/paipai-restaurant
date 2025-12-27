@@ -64,7 +64,7 @@
             <div id="cart-footer" style="display: none;">
                 <input type="text" id="client-name" placeholder="Введите ваше имя" class="cart-input">
                 <div class="total-box">Итого: <span id="total-price">0</span> ₸</div>
-                <button class="btn-whatsapp" onclick="sendToWhatsapp()">
+                <button class="btn-primary" style="background:#25d366; border:none; width:100%; margin-top:15px;" onclick="sendToWhatsapp()">
                     <i class="fab fa-whatsapp"></i> Заказать через WhatsApp
                 </button>
             </div>
@@ -75,10 +75,10 @@
         <div class="container">
             <h2 class="section-title">Где мы?</h2>
             <div class="map-card">
-                <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 10px;"></i>
+                <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: #c48c5d; margin-bottom: 10px;"></i>
                 <p>Алматы, Ресторан Пай Пай</p>
                 <br>
-                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" class="btn-2gis">Открыть 2ГИС</a>
+                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" class="btn-primary" style="text-decoration:none;">Открыть 2ГИС</a>
             </div>
         </div>
     </section>
@@ -87,6 +87,8 @@
         <p>© 2025 PAI PAI Kitchen</p>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="script.js"></script>
 </body>
 
