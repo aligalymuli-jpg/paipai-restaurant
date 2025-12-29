@@ -6,34 +6,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Корзина | Pai Pai</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=6.0">
+    <style>
+        .cart-wrapper {
+            margin-top: 120px;
+            padding-bottom: 50px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .cart-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        
+        .cart-item-info {
+            flex-grow: 1;
+        }
+        
+        .cart-item-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .qty-btn {
+            background: var(--glass-border);
+            border: none;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .total-box {
+            background: rgba(196, 140, 93, 0.1);
+            border: 1px dashed var(--primary);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .order-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .empty-msg {
+            text-align: center;
+            opacity: 0.6;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 
 <body>
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="267591_small.mp4" type="video/mp4">
+    </video>
+
     <header>
-        <div class="nav-container">
-            <a href="index.html" class="back-link"><i class="fas fa-chevron-left"></i> Назад</a>
-            <div class="brand">Ваш заказ</div>
-        </div>
+        <nav>
+            <div class="brand">Моя <span>Корзина</span></div>
+            <a href="index.html" class="nav-btn"><i class="fas fa-times"></i></a>
+        </nav>
     </header>
 
-    <div class="wrapper" style="margin-top: 100px;">
-        <div class="info-card">
-            <div id="cart-items-list"></div>
-            <div id="cart-footer" style="display: none;">
-                <div class="total-box">Итого: <span id="total-price">0</span> ₸</div>
-                <input type="text" id="client-name" placeholder="Ваше имя" class="input-field">
-                <button class="btn-whatsapp" onclick="sendToWhatsapp()">
-                    <i class="fab fa-whatsapp"></i> Заказать в WhatsApp
-                </button>
-            </div>
-        </div>
-    </div>
+    <main class="wrapper cart-wrapper">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Назад в меню</a>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="script.js?v=2.0"></script>
+        <div id="cart-content">
+        </div>
+
+        <div id="cart-footer" style="display: none;">
+            <div class="total-box">
+                <h3 id="total-price">Итого: 0 ₸</h3>
+            </div>
+            <button class="order-btn" onclick="sendOrder()">Заказать через WhatsApp</button>
+        </div>
+    </main>
+
+    <script src="script.js?v=6.0"></script>
+    <script>
+        // Специфический запуск для страницы корзины
+        window.onload = () => {
+            renderCart();
+            initSnow(); // снег тоже пусть будет
+        };
+    </script>
 </body>
 
 </html>

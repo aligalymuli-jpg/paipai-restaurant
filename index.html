@@ -3,53 +3,47 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pai Pai | Доставка еды</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pai Pai | Доставка</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.2">
+    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=5.0">
 </head>
 
 <body>
-    <div id="snow-container"></div>
-
     <video autoplay muted loop playsinline id="bg-video">
         <source src="267591_small.mp4" type="video/mp4">
     </video>
 
     <header>
-        <div class="nav-container">
-            <nav>
-                <div class="brand">Пай <span>Пай</span> 🎄</div>
-                <div class="nav-links">
-                    <a href="admin.html" title="Настройки"><i class="fas fa-cog"></i></a>
-                    <a href="cart.html" class="cart-link">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-count">0</span>
-                    </a>
-                </div>
-            </nav>
+        <div class="header-garland">
+            <div class="bulb"></div>
+            <div class="bulb"></div>
+            <div class="bulb"></div>
+            <div class="bulb"></div>
+            <div class="bulb"></div>
         </div>
+        <nav>
+            <div class="brand">Пай <span>Пай</span> 🎄</div>
+            <div class="nav-controls">
+                <a href="admin.html" class="nav-btn"><i class="fas fa-cog"></i></a>
+                <a href="cart.html" class="nav-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </nav>
     </header>
 
+    <section class="hero">
+        <h1>Pai Pai</h1>
+        <p>Уют и вкус в каждом моменте</p>
+        <a href="#menu-section" style="margin-top:20px; color:var(--primary); text-decoration:none;">Листайте вниз ↓</a>
+    </section>
+
     <main class="wrapper">
-        <section class="hero">
-            <h1>Pai Pai</h1>
-            <p>Уют и вкус в каждом заказе</p>
-            <a href="#menu-section" class="btn-primary" style="text-decoration: none; display: inline-block; margin-top: 20px;">Перейти к меню</a>
-        </section>
-
-        <section id="about" style="margin-top: 60px; text-align: center;">
-            <h2 class="section-title">О Нас</h2>
-            <div class="info-card">
-                <p style="font-size: 1.1rem; line-height: 1.8; opacity: 0.9;">
-                    <strong>Pai Pai</strong> — это больше, чем просто еда. Это традиции гостеприимства Алматы. Мы готовим из свежих продуктов, чтобы вы чувствовали заботу в каждом кусочке. Наш кофе согревает, а кухня дарит сытость и радость!
-                </p>
-            </div>
-        </section>
-
-        <section id="menu-section" style="margin-top: 60px;">
-            <h2 class="section-title">Наше Меню</h2>
+        <section id="menu-section">
+            <h2 class="section-title">Меню</h2>
             <div class="categories">
                 <button class="cat-btn active" onclick="filterMenu('all')">Все</button>
                 <button class="cat-btn" onclick="filterMenu('first')">Первые</button>
@@ -57,49 +51,34 @@
                 <button class="cat-btn" onclick="filterMenu('salad')">Салаты</button>
                 <button class="cat-btn" onclick="filterMenu('coffee')">Напитки</button>
             </div>
-            <div class="menu-grid" id="menu-container">
+            <div class="menu-grid" id="menu-container"></div>
+        </section>
+
+        <section id="about" style="margin-top: 50px;">
+            <h2 class="section-title">Наша история</h2>
+            <div class="info-card">
+                <p>Мы создаем Pai Pai как место, где каждый чувствует себя как дома. Только свежие ингредиенты и любовь к своему делу.</p>
             </div>
         </section>
 
-        <section id="reviews" style="margin-top: 60px;">
-            <h2 class="section-title">Отзывы Гостей</h2>
-            <div class="reviews-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                <div class="info-card" style="text-align: left; padding: 20px;">
-                    <div style="color: #ffcc00; margin-bottom: 10px;">⭐⭐⭐⭐⭐</div>
-                    <p style="font-style: italic; font-size: 0.9rem; opacity: 0.8;">"Самый сочный лагман в городе! Доставили горячим. Теперь обедаем только с Пай Пай."</p>
-                    <p style="margin-top: 10px; font-weight: bold; color: #c48c5d;">— Айбек, г. Алматы</p>
-                </div>
-                <div class="info-card" style="text-align: left; padding: 20px;">
-                    <div style="color: #ffcc00; margin-bottom: 10px;">⭐⭐⭐⭐⭐</div>
-                    <p style="font-style: italic; font-size: 0.9rem; opacity: 0.8;">"Кофе просто пушка! Ребята молодцы, сервис на высоте. Рекомендую всем!"</p>
-                    <p style="margin-top: 10px; font-weight: bold; color: #c48c5d;">— Мадина</p>
-                </div>
-            </div>
-        </section>
+        <section id="contacts" style="margin-top: 50px; padding-bottom: 50px;">
+            <h2 class="section-title">Где мы?</h2>
+            <div class="info-card" style="text-align: center;">
+                <p>Алматы, Казахстан</p>
+                <iframe class="small-map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d186126.88340242402!2d76.71183184651034!3d43.217319958931134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38836e7d16c5cbab%3A0x3d44668fad986d76!2z0JDQu9C80LDRgtGLLCDQmtCw0LfQsNGF0YHRgtCw0L0!5e0!3m2!1sru!2skz!4v1700000000000!5m2!1sru!2skz"
+                    allowfullscreen="" loading="lazy"></iframe>
 
-        <section id="contacts" style="margin: 60px 0; text-align: center;">
-            <h2 class="section-title">Мы в сети</h2>
-            <div style="display: flex; justify-content: center; gap: 30px; font-size: 2rem;">
-                <a href="https://instagram.com/paipai_almaty" target="_blank" style="color: #e4405f;"><i class="fab fa-instagram"></i></a>
-                <a href="https://tiktok.com/" target="_blank" style="color: #fff;"><i class="fab fa-tiktok"></i></a>
-                <a href="https://wa.me/77052363788" target="_blank" style="color: #25d366;"><i class="fab fa-whatsapp"></i></a>
-            </div>
-
-            <div class="info-card" style="margin-top: 30px;">
-                <i class="fas fa-map-marker-alt" style="font-size: 2rem; color: #c48c5d;"></i>
-                <p style="margin-top: 10px;">Алматы, наш уютный ресторан Пай Пай</p>
-                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" class="btn-primary" style="text-decoration:none; display: inline-block; margin-top: 15px;">Открыть 2ГИС</a>
+                <div style="display: flex; justify-content: center; gap: 20px; font-size: 1.5rem; margin-top: 15px;">
+                    <a href="#" style="color:white;"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/77052363788" style="color:#25d366;"><i class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
         </section>
     </main>
 
-    <footer style="text-align: center; padding: 40px; opacity: 0.5; font-size: 0.8rem;">
-        &copy; 2024-2025 Pai Pai Coffee & Food. All Rights Reserved.
-    </footer>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="script.js?v=2.2"></script>
+    <script src="script.js?v=5.0"></script>
 </body>
 
 </html>

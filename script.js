@@ -1,25 +1,108 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyDU7Q6LOha4gIBz6HoHyx3Nx7LwWi4dSls",
-    authDomain: "ali1-717e6.firebaseapp.com",
-    databaseURL: "https://ali1-717e6-default-rtdb.firebaseio.com",
-    projectId: "ali1-717e6",
-    storageBucket: "ali1-717e6.firebasestorage.app",
-    messagingSenderId: "293002535182",
-    appId: "1:293002535182:web:ac9be8c8ab5610e2e8375f"
-};
+// ... (оставь конфиг Firebase сверху как был) ...
 
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-
-let products = [];
 let cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
 
-// --- ФУНКЦИЯ СНЕГА ---
-function initSnow() {
-    const container = document.createElement('div');
-    container.id = 'snow-container';
-    document.body.appendChild(container);
+// Обновление UI счетчика (на главной)
+function updateUI() {
+    const count = document.getElementById('cart-count');
+    if (count) {
+        count.innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+}
 
+// Добавление в корзину
+function addToCart(id) {
+    // products берется из базы, эта часть у тебя в коде выше
+    const p = products.find(i => i.id === id);
+    const item = cart.find(i => i.id === id);
+
+    if (item) {
+        item.qty++;
+    } else {
+        cart.push({
+            id: p.id,
+            name: p.name,
+            price: parseInt(p.price),
+            img: p.img,
+            qty: 1
+        });
+    }
+    saveCart();
+    updateUI();
+    alert('Добавлено в корзину!');
+}
+
+function saveCart() {
+    localStorage.setItem('pai_pai_cart', JSON.stringify(cart));
+}
+
+// Отрисовка корзины (для страницы cart.html)
+function renderCart() {
+    const container = document.getElementById('cart-content');
+    const footer = document.getElementById('cart-footer');
+    if (!container) return;
+
+    if (cart.length === 0) {
+        container.innerHTML = `<div class="empty-msg"><h3>Корзина пуста 🎄</h3><p>Добавьте что-нибудь вкусное!</p></div>`;
+        footer.style.display = 'none';
+        return;
+    }
+
+    footer.style.display = 'block';
+    container.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+        container.innerHTML += `
+            <div class="cart-item">
+                <img src="${item.img}">
+                <div class="cart-item-info">
+                    <h4>${item.name}</h4>
+                    <p style="color:var(--primary)">${item.price} ₸</p>
+                </div>
+                <div class="qty-controls">
+                    <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+                    <span>${item.qty}</span>
+                    <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                </div>
+            </div>`;
+    });
+
+    document.getElementById('total-price').innerText = `Итого: ${total} ₸`;
+}
+
+function changeQty(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+    }
+    saveCart();
+    renderCart();
+    updateUI();
+}
+
+// Отправка заказа
+function sendOrder() {
+    if (cart.length === 0) return;
+
+    let message = "Привет! Мой заказ в Pai Pai: \n\n";
+    let total = 0;
+
+    cart.forEach(item => {
+        message += `▪️ ${item.name} x${item.qty} = ${item.price * item.qty} ₸\n`;
+        total += item.price * item.qty;
+    });
+
+    message += `\n💰 ИТОГО: ${total} ₸`;
+
+    const encoded = encodeURIComponent(message);
+    window.location.href = `https://wa.me/77052363788?text=${encoded}`;
+}
+
+// Снег (функция из прошлого шага)
+function initSnow() {
     setInterval(() => {
         const flake = document.createElement('div');
         flake.className = 'snowflake';
@@ -27,92 +110,8 @@ function initSnow() {
         flake.style.width = size;
         flake.style.height = size;
         flake.style.left = Math.random() * 100 + 'vw';
-        flake.style.animation = `fall ${Math.random() * 4 + 4}s linear forwards`;
-        container.appendChild(flake);
+        flake.style.animation = `fall ${Math.random() * 5 + 5}s linear forwards`;
+        document.body.appendChild(flake);
         setTimeout(() => flake.remove(), 7000);
-    }, 300);
+    }, 400);
 }
-
-database.ref('products').on('value', (snapshot) => {
-    const data = snapshot.val();
-    products = data ? Object.keys(data).map(key => ({...data[key], id: key })) : [];
-    renderMenu('all');
-    updateUI();
-});
-
-function renderMenu(category = 'all') {
-    const container = document.getElementById('menu-container');
-    if (!container) return;
-    container.innerHTML = '';
-    const filtered = category === 'all' ? products : products.filter(p => p.cat === category);
-    filtered.forEach(p => {
-        container.innerHTML += `
-            <div class="product-card">
-                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/400x300?text=Pai+Pai+Food'">
-                <div style="padding: 15px;">
-                    <h3 style="margin-bottom: 10px; font-size: 1.1rem; color:white;">${p.name}</h3>
-                    <div class="price">${p.price} ₸</div>
-                    <button class="btn-primary" onclick="addToCart('${p.id}')" style="width:100%;">В корзину</button>
-                </div>
-            </div>`;
-    });
-}
-
-function filterMenu(cat) {
-    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-    if (window.event) window.event.target.classList.add('active');
-    renderMenu(cat);
-}
-
-function addToCart(id) {
-    const p = products.find(i => i.id === id);
-    const inCart = cart.find(i => i.id === id);
-    if (inCart) inCart.qty++;
-    else cart.push({...p, qty: 1 });
-    saveCart();
-    const btn = event.target;
-    btn.innerText = "Добавлено! ✓";
-    setTimeout(() => btn.innerText = "В корзину", 1000);
-}
-
-function saveCart() {
-    localStorage.setItem('pai_pai_cart', JSON.stringify(cart));
-    updateUI();
-}
-
-function updateUI() {
-    const countElement = document.getElementById('cart-count');
-    if (countElement) countElement.innerText = cart.reduce((s, i) => s + i.qty, 0);
-    const list = document.getElementById('cart-items-list');
-    const totalDisplay = document.getElementById('total-price');
-    const footer = document.getElementById('cart-footer');
-    if (!list) return;
-    list.innerHTML = '';
-    let total = 0;
-    if (cart.length === 0) {
-        list.innerHTML = '<p style="text-align:center; opacity:0.5; color:white; padding:20px;">Корзина пуста ❄️</p>';
-        if (footer) footer.style.display = 'none';
-    } else {
-        if (footer) footer.style.display = 'block';
-        cart.forEach(i => {
-            total += i.price * i.qty;
-            list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; color:white;">
-                <span>${i.name} x${i.qty}</span>
-                <span>${i.price * i.qty} ₸</span>
-            </div>`;
-        });
-        if (totalDisplay) totalDisplay.innerText = total;
-    }
-}
-
-function sendToWhatsapp() {
-    const name = document.getElementById('client-name').value;
-    if (!name) return alert("Введите ваше имя!");
-    let text = `*Новый заказ Pai Pai*\n👤 Имя: ${name}\n`;
-    cart.forEach(i => text += `• ${i.name} (${i.qty} шт.) — ${i.price * i.qty} ₸\n`);
-    text += `💰 *ИТОГО: ${document.getElementById('total-price').innerText} ₸*`;
-    window.open(`https://wa.me/77052363788?text=${encodeURIComponent(text)}`);
-}
-
-// Запускаем снег при загрузке
-window.onload = initSnow;
