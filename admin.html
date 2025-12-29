@@ -59,9 +59,9 @@
 <body>
     <div id="login-form" class="login-screen">
         <div class="admin-box">
-            <h2 style="color: #c48c5d; margin-bottom: 20px;">Вход для администратора</h2>
+            <h2 style="color: #c48c5d; margin-bottom: 20px; font-family: 'Marck Script', cursive; font-size: 2rem;">Вход для админа</h2>
             <input type="password" id="admin-pass-input" placeholder="Введите пароль доступа">
-            <button onclick="checkAccess()" class="btn-primary" style="width: 100%; margin-top: 10px; cursor: pointer;">Войти</button>
+            <button onclick="checkAccess()" class="btn-primary" style="width: 100%; margin-top: 10px; cursor: pointer; background: #c48c5d; border: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold;">Войти</button>
             <p id="error-msg" style="color: #ff4d4d; margin-top: 15px; display: none;">Неверный пароль!</p>
         </div>
     </div>
@@ -69,10 +69,12 @@
     <div id="admin-content">
         <div class="admin-box" style="margin: 20px auto; text-align: left;">
             <a href="index.html" style="color:#c48c5d; text-decoration: none;">← Вернуться на сайт</a>
-            <h2 style="margin: 20px 0">Добавить блюдо</h2>
+            <h2 style="margin: 20px 0; color: #fff;">Добавить блюдо</h2>
+
             <input type="text" id="name" placeholder="Название блюда">
             <input type="number" id="price" placeholder="Цена (₸)">
             <input type="text" id="img" placeholder="Ссылка на фото (URL)">
+
             <select id="cat">
                 <option value="first">Первые блюда</option>
                 <option value="second">Вторые блюда</option>
@@ -82,15 +84,17 @@
                 <option value="dessert">Десерты</option>
                 <option value="coffee">Кофе / Напитки</option>
             </select>
-            <button onclick="upload()" class="btn-primary" style="width:100%; margin-top: 10px; cursor: pointer;">Опубликовать</button>
 
-            <h3 style="margin-top: 30px; color: #c48c5d;">Управление меню:</h3>
+            <button onclick="upload()" class="btn-primary" style="width:100%; margin-top: 10px; cursor: pointer; background: #c48c5d; border: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold;">Опубликовать в меню</button>
+
+            <h3 style="margin-top: 30px; color: #c48c5d;">Управление текущим меню:</h3>
             <div id="list"></div>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDU7Q6LOha4gIBz6HoHyx3Nx7LwWi4dSls",
@@ -104,19 +108,29 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // ФУНКЦИЯ ПРОВЕРКИ ДОСТУПА (Берет пароль из Firebase)
         function checkAccess() {
             const entered = document.getElementById('admin-pass-input').value;
-            database.ref('admin_settings/pass').once('value').then(s => {
-                if (entered === s.val()) {
+
+            // Обращаемся именно по тому пути, что у тебя на скриншоте
+            database.ref('admin_settings/pass').once('value').then(snapshot => {
+                const correctPass = snapshot.val();
+
+                if (entered === correctPass) {
                     document.getElementById('login-form').style.display = 'none';
                     document.getElementById('admin-content').style.display = 'block';
                     loadList();
                 } else {
                     document.getElementById('error-msg').style.display = 'block';
+                    alert("Братан, пароль не подходит! Проверь в Firebase.");
                 }
+            }).catch(error => {
+                console.error("Ошибка доступа к базе:", error);
+                alert("Ошибка! Проверь правила (Rules) в Firebase.");
             });
         }
 
+        // ФУНКЦИЯ ДОБАВЛЕНИЯ
         function upload() {
             const name = document.getElementById('name').value;
             const price = document.getElementById('price').value;
@@ -130,16 +144,19 @@
                     img,
                     cat
                 }).then(() => {
-                    alert("Блюдо добавлено!");
+                    alert("Красава! Блюдо уже на сайте.");
                     document.getElementById('name').value = '';
                     document.getElementById('price').value = '';
                     document.getElementById('img').value = '';
+                }).catch(err => {
+                    alert("Firebase отклонил запись! Проверь Rules.");
                 });
             } else {
-                alert("Заполните все поля!");
+                alert("Заполни все поля, братан!");
             }
         }
 
+        // ЗАГРУЗКА СПИСКА ДЛЯ УДАЛЕНИЯ
         function loadList() {
             database.ref('products').on('value', s => {
                 const list = document.getElementById('list');
@@ -149,13 +166,37 @@
                 for (let id in data) {
                     list.innerHTML += `
                         <div class="item-row">
-                            <span>${data[id].name}</span>
-                            <button onclick="database.ref('products/${id}').remove()" style="color:#ff4d4d; background:none; border:none; cursor:pointer; font-weight:bold;">Удалить</button>
+                            <span>${data[id].name} (${data[id].price} ₸)</span>
+                            <button onclick="deleteProduct('${id}')" style="color:#ff4d4d; background:none; border:none; cursor:pointer; font-weight:bold;">Удалить</button>
                         </div>`;
                 }
             });
         }
+
+        function deleteProduct(id) {
+            if (confirm("Точно удаляем?")) {
+                database.ref('products/' + id).remove();
+            }
+        }
+        // Добавь это в конец <script> в admin.html
+        function initSnow() {
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+            setInterval(() => {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                const size = Math.random() * 4 + 2 + 'px';
+                flake.style.width = size;
+                flake.style.height = size;
+                flake.style.left = Math.random() * 100 + 'vw';
+                flake.style.animation = `fall ${Math.random() * 4 + 4}s linear forwards`;
+                container.appendChild(flake);
+                setTimeout(() => flake.remove(), 7000);
+            }, 300);
+        }
+        window.addEventListener('load', initSnow);
     </script>
+
 </body>
 
 </html>

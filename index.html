@@ -4,14 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Pai Pai | Доставка еды</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.2">
 </head>
 
 <body>
+    <div id="snow-container"></div>
+
     <video autoplay muted loop playsinline id="bg-video">
         <source src="267591_small.mp4" type="video/mp4">
     </video>
@@ -19,77 +20,86 @@
     <header>
         <div class="nav-container">
             <nav>
-                <div class="brand">Пай <span>Пай</span></div>
+                <div class="brand">Пай <span>Пай</span> 🎄</div>
                 <div class="nav-links">
                     <a href="admin.html" title="Настройки"><i class="fas fa-cog"></i></a>
-                    <a href="#cart-section" class="cart-link">
-                        <i class="fas fa-shopping-basket"></i> <span id="cart-count">0</span>
+                    <a href="cart.html" class="cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count">0</span>
                     </a>
                 </div>
             </nav>
         </div>
     </header>
 
-    <section id="hero" class="hero">
-        <div class="hero-content">
-            <h1>Пай Пай</h1>
-            <p>Вкус, который объединяет</p>
-            <a href="#menu-section" class="btn-primary">Перейти к меню</a>
-        </div>
-    </section>
+    <main class="wrapper">
+        <section class="hero">
+            <h1>Pai Pai</h1>
+            <p>Уют и вкус в каждом заказе</p>
+            <a href="#menu-section" class="btn-primary" style="text-decoration: none; display: inline-block; margin-top: 20px;">Перейти к меню</a>
+        </section>
 
-    <section id="menu-section" class="section">
-        <div class="container">
-            <h2 class="section-title">Меню</h2>
-            <div class="categories-wrapper">
-                <div class="categories">
-                    <button class="cat-btn active" onclick="filterMenu('all')">Все</button>
-                    <button class="cat-btn" onclick="filterMenu('first')">Первые</button>
-                    <button class="cat-btn" onclick="filterMenu('second')">Вторые</button>
-                    <button class="cat-btn" onclick="filterMenu('salad')">Салаты</button>
-                    <button class="cat-btn" onclick="filterMenu('company')">На компанию</button>
-                    <button class="cat-btn" onclick="filterMenu('bakery')">Выпечка</button>
-                    <button class="cat-btn" onclick="filterMenu('dessert')">Десерты</button>
-                    <button class="cat-btn" onclick="filterMenu('coffee')">Кофе</button>
+        <section id="about" style="margin-top: 60px; text-align: center;">
+            <h2 class="section-title">О Нас</h2>
+            <div class="info-card">
+                <p style="font-size: 1.1rem; line-height: 1.8; opacity: 0.9;">
+                    <strong>Pai Pai</strong> — это больше, чем просто еда. Это традиции гостеприимства Алматы. Мы готовим из свежих продуктов, чтобы вы чувствовали заботу в каждом кусочке. Наш кофе согревает, а кухня дарит сытость и радость!
+                </p>
+            </div>
+        </section>
+
+        <section id="menu-section" style="margin-top: 60px;">
+            <h2 class="section-title">Наше Меню</h2>
+            <div class="categories">
+                <button class="cat-btn active" onclick="filterMenu('all')">Все</button>
+                <button class="cat-btn" onclick="filterMenu('first')">Первые</button>
+                <button class="cat-btn" onclick="filterMenu('second')">Вторые</button>
+                <button class="cat-btn" onclick="filterMenu('salad')">Салаты</button>
+                <button class="cat-btn" onclick="filterMenu('coffee')">Напитки</button>
+            </div>
+            <div class="menu-grid" id="menu-container">
+            </div>
+        </section>
+
+        <section id="reviews" style="margin-top: 60px;">
+            <h2 class="section-title">Отзывы Гостей</h2>
+            <div class="reviews-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <div class="info-card" style="text-align: left; padding: 20px;">
+                    <div style="color: #ffcc00; margin-bottom: 10px;">⭐⭐⭐⭐⭐</div>
+                    <p style="font-style: italic; font-size: 0.9rem; opacity: 0.8;">"Самый сочный лагман в городе! Доставили горячим. Теперь обедаем только с Пай Пай."</p>
+                    <p style="margin-top: 10px; font-weight: bold; color: #c48c5d;">— Айбек, г. Алматы</p>
+                </div>
+                <div class="info-card" style="text-align: left; padding: 20px;">
+                    <div style="color: #ffcc00; margin-bottom: 10px;">⭐⭐⭐⭐⭐</div>
+                    <p style="font-style: italic; font-size: 0.9rem; opacity: 0.8;">"Кофе просто пушка! Ребята молодцы, сервис на высоте. Рекомендую всем!"</p>
+                    <p style="margin-top: 10px; font-weight: bold; color: #c48c5d;">— Мадина</p>
                 </div>
             </div>
-            <div class="menu-grid" id="menu-container"></div>
-        </div>
-    </section>
+        </section>
 
-    <section id="cart-section" class="section">
-        <div class="cart-card">
-            <h2 class="section-title" style="font-size: 2rem;">Корзина</h2>
-            <div id="cart-items-list"></div>
-            <div id="cart-footer" style="display: none;">
-                <input type="text" id="client-name" placeholder="Введите ваше имя" class="cart-input">
-                <div class="total-box">Итого: <span id="total-price">0</span> ₸</div>
-                <button class="btn-primary" style="background:#25d366; border:none; width:100%; margin-top:15px;" onclick="sendToWhatsapp()">
-                    <i class="fab fa-whatsapp"></i> Заказать через WhatsApp
-                </button>
+        <section id="contacts" style="margin: 60px 0; text-align: center;">
+            <h2 class="section-title">Мы в сети</h2>
+            <div style="display: flex; justify-content: center; gap: 30px; font-size: 2rem;">
+                <a href="https://instagram.com/paipai_almaty" target="_blank" style="color: #e4405f;"><i class="fab fa-instagram"></i></a>
+                <a href="https://tiktok.com/" target="_blank" style="color: #fff;"><i class="fab fa-tiktok"></i></a>
+                <a href="https://wa.me/77052363788" target="_blank" style="color: #25d366;"><i class="fab fa-whatsapp"></i></a>
             </div>
-        </div>
-    </section>
 
-    <section id="location" class="section">
-        <div class="container">
-            <h2 class="section-title">Где мы?</h2>
-            <div class="map-card">
-                <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: #c48c5d; margin-bottom: 10px;"></i>
-                <p>Алматы, Ресторан Пай Пай</p>
-                <br>
-                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" class="btn-primary" style="text-decoration:none;">Открыть 2ГИС</a>
+            <div class="info-card" style="margin-top: 30px;">
+                <i class="fas fa-map-marker-alt" style="font-size: 2rem; color: #c48c5d;"></i>
+                <p style="margin-top: 10px;">Алматы, наш уютный ресторан Пай Пай</p>
+                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" class="btn-primary" style="text-decoration:none; display: inline-block; margin-top: 15px;">Открыть 2ГИС</a>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <footer style="text-align: center; padding: 40px; opacity: 0.5;">
-        <p>© 2025 PAI PAI Kitchen</p>
+    <footer style="text-align: center; padding: 40px; opacity: 0.5; font-size: 0.8rem;">
+        &copy; 2024-2025 Pai Pai Coffee & Food. All Rights Reserved.
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=2.2"></script>
 </body>
 
 </html>

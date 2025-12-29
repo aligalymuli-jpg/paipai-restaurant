@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина | Pai Pai</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2.0">
+</head>
+
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="back-link"><i class="fas fa-chevron-left"></i> Назад</a>
+            <div class="brand">Ваш заказ</div>
+        </div>
+    </header>
+
+    <div class="wrapper" style="margin-top: 100px;">
+        <div class="info-card">
+            <div id="cart-items-list"></div>
+            <div id="cart-footer" style="display: none;">
+                <div class="total-box">Итого: <span id="total-price">0</span> ₸</div>
+                <input type="text" id="client-name" placeholder="Ваше имя" class="input-field">
+                <button class="btn-whatsapp" onclick="sendToWhatsapp()">
+                    <i class="fab fa-whatsapp"></i> Заказать в WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="script.js?v=2.0"></script>
+</body>
+
+</html>
