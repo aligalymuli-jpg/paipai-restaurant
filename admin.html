@@ -5,31 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Админка | Pai Pai</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=18.0">
     <style>
         #admin-content {
             display: none;
-        }
-        
-        .login-screen {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0a0a;
-            position: fixed;
-            width: 100%;
-            z-index: 2000;
+            padding: 20px;
         }
         
         .admin-box {
             max-width: 500px;
-            width: 90%;
+            margin: 0 auto;
             background: #111;
             padding: 25px;
             border-radius: 20px;
             border: 1px solid #c48c5d;
-            text-align: center;
         }
         
         input,
@@ -41,54 +30,87 @@
             color: white;
             border: 1px solid #444;
             border-radius: 10px;
-            font-family: inherit;
+            font-size: 1rem;
         }
         
-        .item-row {
+        .upload-area {
+            border: 2px dashed #444;
+            padding: 30px;
+            text-align: center;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 15px 0;
+            display: block;
+        }
+        
+        #img-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            display: none;
+            margin-top: 15px;
+            border-radius: 10px;
+        }
+        
+        .list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 12px;
             border-bottom: 1px solid #333;
-            color: white;
-            text-align: left;
+        }
+        
+        .btn-delete {
+            color: #ff4d4d;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    <div id="login-form" class="login-screen">
-        <div class="admin-box">
-            <h2 style="color: #c48c5d; margin-bottom: 20px; font-family: 'Marck Script', cursive; font-size: 2rem;">Вход для админа</h2>
-            <input type="password" id="admin-pass-input" placeholder="Введите пароль доступа">
-            <button onclick="checkAccess()" class="btn-primary" style="width: 100%; margin-top: 10px; cursor: pointer; background: #c48c5d; border: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold;">Войти</button>
-            <p id="error-msg" style="color: #ff4d4d; margin-top: 15px; display: none;">Неверный пароль!</p>
+
+    <div id="login-form" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div class="admin-box" style="text-align: center;">
+            <h2 style="font-family: 'Marck Script', cursive; color: #c48c5d; font-size: 2.5rem;">Админка</h2>
+            <input type="password" id="admin-pass" placeholder="Пароль администратора">
+            <button onclick="login()" class="btn-sm" style="margin-top: 15px; height: 50px; width: 100%;">Войти</button>
         </div>
     </div>
 
     <div id="admin-content">
-        <div class="admin-box" style="margin: 20px auto; text-align: left;">
-            <a href="index.html" style="color:#c48c5d; text-decoration: none;">← Вернуться на сайт</a>
-            <h2 style="margin: 20px 0; color: #fff;">Добавить блюдо</h2>
+        <div class="admin-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="index.html" style="color:#c48c5d; text-decoration: none;">← На сайт</a>
+                <button onclick="location.reload()" style="background:none; border:none; color:#666;">Обновить</button>
+            </div>
 
-            <input type="text" id="name" placeholder="Название блюда">
-            <input type="number" id="price" placeholder="Цена (₸)">
-            <input type="text" id="img" placeholder="Ссылка на фото (URL)">
+            <h2 style="margin: 20px 0;">Новое блюдо</h2>
+            <input type="text" id="p-name" placeholder="Название (например: Плов)">
+            <input type="number" id="p-price" placeholder="Цена (тг)">
 
-            <select id="cat">
+            <select id="p-cat">
                 <option value="first">Первые блюда</option>
                 <option value="second">Вторые блюда</option>
-                <option value="salad">Салаты</option>
-                <option value="company">На компанию</option>
                 <option value="bakery">Выпечка</option>
-                <option value="dessert">Десерты</option>
-                <option value="coffee">Кофе / Напитки</option>
+                <option value="salad">Салаты</option>
+                <option value="group">На компанию</option>
+                <option value="semi">Полуфабрикаты</option>
+                <option value="coffee">Напитки</option>
             </select>
 
-            <button onclick="upload()" class="btn-primary" style="width:100%; margin-top: 10px; cursor: pointer; background: #c48c5d; border: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold;">Опубликовать в меню</button>
+            <label class="upload-area">
+                <input type="file" id="p-file" accept="image/*" style="display:none;" onchange="showPreview(this)">
+                <span id="upload-label">📸 Выбрать фото из галереи</span>
+                <img id="img-preview">
+            </label>
 
-            <h3 style="margin-top: 30px; color: #c48c5d;">Управление текущим меню:</h3>
-            <div id="list"></div>
+            <button id="add-btn" onclick="saveProduct()" class="btn-sm" style="height: 55px; font-size: 1.1rem; margin-top: 10px; width: 100%;">Опубликовать блюдо</button>
+
+            <h3 style="margin-top: 40px; color: #c48c5d; border-bottom: 1px solid #333; padding-bottom: 10px;">Текущее меню:</h3>
+            <div id="product-list"></div>
         </div>
     </div>
 
@@ -100,103 +122,112 @@
             apiKey: "AIzaSyDU7Q6LOha4gIBz6HoHyx3Nx7LwWi4dSls",
             authDomain: "ali1-717e6.firebaseapp.com",
             databaseURL: "https://ali1-717e6-default-rtdb.firebaseio.com",
-            projectId: "ali1-717e6",
-            storageBucket: "ali1-717e6.firebasestorage.app",
-            messagingSenderId: "293002535182",
-            appId: "1:293002535182:web:ac9be8c8ab5610e2e8375f"
+            projectId: "ali1-717e6"
         };
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        const db = firebase.database();
 
-        // ФУНКЦИЯ ПРОВЕРКИ ДОСТУПА (Берет пароль из Firebase)
-        function checkAccess() {
-            const entered = document.getElementById('admin-pass-input').value;
+        // ТВOЙ КЛЮЧ УЖЕ ЗДЕСЬ
+        const imgbbKey = "19b2ea0cacae4c9328806e4c678db140";
 
-            // Обращаемся именно по тому пути, что у тебя на скриншоте
-            database.ref('admin_settings/pass').once('value').then(snapshot => {
-                const correctPass = snapshot.val();
-
-                if (entered === correctPass) {
+        function login() {
+            const pass = document.getElementById('admin-pass').value;
+            db.ref('admin_settings/pass').once('value').then(s => {
+                if (pass === s.val()) {
                     document.getElementById('login-form').style.display = 'none';
                     document.getElementById('admin-content').style.display = 'block';
-                    loadList();
+                    fetchList();
                 } else {
-                    document.getElementById('error-msg').style.display = 'block';
-                    alert("Братан, пароль не подходит! Проверь в Firebase.");
+                    alert("Неверный пароль!");
                 }
-            }).catch(error => {
-                console.error("Ошибка доступа к базе:", error);
-                alert("Ошибка! Проверь правила (Rules) в Firebase.");
             });
         }
 
-        // ФУНКЦИЯ ДОБАВЛЕНИЯ
-        function upload() {
-            const name = document.getElementById('name').value;
-            const price = document.getElementById('price').value;
-            const img = document.getElementById('img').value;
-            const cat = document.getElementById('cat').value;
+        function showPreview(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById('img-preview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('upload-label').innerText = "Фото выбрано ✅";
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-            if (name && price && img) {
-                database.ref('products').push({
-                    name,
-                    price: parseInt(price),
-                    img,
-                    cat
-                }).then(() => {
-                    alert("Красава! Блюдо уже на сайте.");
-                    document.getElementById('name').value = '';
-                    document.getElementById('price').value = '';
-                    document.getElementById('img').value = '';
-                }).catch(err => {
-                    alert("Firebase отклонил запись! Проверь Rules.");
+        async function saveProduct() {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const cat = document.getElementById('p-cat').value;
+            const file = document.getElementById('p-file').files[0];
+            const btn = document.getElementById('add-btn');
+
+            if (!name || !price || !file) {
+                alert("Заполни все поля и выбери фото!");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "⏳ Загрузка фото...";
+
+            try {
+                const formData = new FormData();
+                formData.append("image", file);
+
+                // 1. Загрузка в ImgBB
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+                    method: "POST",
+                    body: formData
                 });
-            } else {
-                alert("Заполни все поля, братан!");
+                const resData = await res.json();
+
+                if (resData.success) {
+                    const url = resData.data.url;
+
+                    // 2. Сохранение в Firebase
+                    await db.ref('products').push({
+                        name: name,
+                        price: parseInt(price),
+                        img: url,
+                        cat: cat
+                    });
+
+                    alert("✅ Блюдо успешно добавлено!");
+                    location.reload();
+                } else {
+                    alert("Ошибка ImgBB: " + resData.error.message);
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert("Ошибка! Проверь интернет или настройки базы.");
+                btn.disabled = false;
+                btn.innerText = "Опубликовать блюдо";
             }
         }
 
-        // ЗАГРУЗКА СПИСКА ДЛЯ УДАЛЕНИЯ
-        function loadList() {
-            database.ref('products').on('value', s => {
-                const list = document.getElementById('list');
+        function fetchList() {
+            db.ref('products').on('value', s => {
+                const container = document.getElementById('product-list');
                 const data = s.val();
-                list.innerHTML = '';
+                container.innerHTML = '';
                 if (!data) return;
-                for (let id in data) {
-                    list.innerHTML += `
-                        <div class="item-row">
-                            <span>${data[id].name} (${data[id].price} ₸)</span>
-                            <button onclick="deleteProduct('${id}')" style="color:#ff4d4d; background:none; border:none; cursor:pointer; font-weight:bold;">Удалить</button>
+                Object.keys(data).forEach(id => {
+                    container.innerHTML += `
+                        <div class="list-item">
+                            <span>${data[id].name}</span>
+                            <button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button>
                         </div>`;
-                }
+                });
             });
         }
 
-        function deleteProduct(id) {
-            if (confirm("Точно удаляем?")) {
-                database.ref('products/' + id).remove();
+        function deleteItem(id) {
+            if (confirm("Удалить блюдо?")) {
+                db.ref('products/' + id).remove();
             }
         }
-        // Добавь это в конец <script> в admin.html
-        function initSnow() {
-            const container = document.createElement('div');
-            document.body.appendChild(container);
-            setInterval(() => {
-                const flake = document.createElement('div');
-                flake.className = 'snowflake';
-                const size = Math.random() * 4 + 2 + 'px';
-                flake.style.width = size;
-                flake.style.height = size;
-                flake.style.left = Math.random() * 100 + 'vw';
-                flake.style.animation = `fall ${Math.random() * 4 + 4}s linear forwards`;
-                container.appendChild(flake);
-                setTimeout(() => flake.remove(), 7000);
-            }, 300);
-        }
-        window.addEventListener('load', initSnow);
     </script>
-
 </body>
 
 </html>

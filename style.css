@@ -19,6 +19,42 @@ body {
     scroll-behavior: smooth;
 }
 
+
+/* ПРЕЛОАДЕР */
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    z-index: 5000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--glass);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 #bg-video {
     position: fixed;
     top: 0;
@@ -42,7 +78,7 @@ header {
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     z-index: 1000;
-    padding: 20px 15px;
+    padding: 15px;
 }
 
 .header-garland {
@@ -65,11 +101,9 @@ header {
 @keyframes glow {
     0% {
         opacity: 0.3;
-        filter: brightness(0.5);
     }
     100% {
         opacity: 1;
-        filter: brightness(1.5);
         box-shadow: 0 0 8px currentColor;
     }
 }
@@ -77,7 +111,6 @@ header {
 .bulb:nth-child(odd) {
     color: #ff4d4d;
     background: #ff4d4d;
-    animation-delay: 0s;
 }
 
 .bulb:nth-child(even) {
@@ -94,17 +127,11 @@ nav {
 
 .brand {
     font-family: 'Marck Script', cursive;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
 }
 
 .brand span {
     color: var(--primary);
-}
-
-.nav-controls {
-    display: flex;
-    gap: 20px;
-    align-items: center;
 }
 
 .nav-btn {
@@ -120,12 +147,12 @@ nav {
     right: -10px;
     background: var(--primary);
     font-size: 0.7rem;
-    padding: 1px 5px;
-    border-radius: 50%;
+    padding: 1px 6px;
+    border-radius: 10px;
 }
 
 .hero {
-    height: 100vh;
+    height: 70vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -136,19 +163,15 @@ nav {
 .hero h1 {
     font-family: 'Marck Script', cursive;
     font-size: 4rem;
-    color: white;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
-
-
-/* КАТЕГОРИИ - ТЕПЕРЬ ПО ЦЕНТРУ */
 
 .categories {
     display: flex;
     overflow-x: auto;
     justify-content: center;
     gap: 10px;
-    padding: 15px 5px;
-    margin-bottom: 25px;
+    padding: 15px;
     scrollbar-width: none;
 }
 
@@ -159,7 +182,6 @@ nav {
 @media (max-width: 600px) {
     .categories {
         justify-content: flex-start;
-        padding: 15px 20px;
     }
 }
 
@@ -167,12 +189,11 @@ nav {
     background: var(--glass);
     border: 1px solid var(--glass-border);
     color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
+    padding: 10px 18px;
+    border-radius: 20px;
     white-space: nowrap;
     cursor: pointer;
     transition: 0.3s;
-    font-size: 0.9rem;
 }
 
 .cat-btn.active {
@@ -184,7 +205,7 @@ nav {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
-    padding: 0 10px;
+    padding: 15px;
 }
 
 .product-card {
@@ -192,12 +213,19 @@ nav {
     border-radius: 15px;
     overflow: hidden;
     border: 1px solid var(--glass-border);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.product-card:active {
+    transform: scale(0.95);
 }
 
 .product-card img {
     width: 100%;
     height: 130px;
     object-fit: cover;
+    background: #222;
 }
 
 .product-info {
@@ -206,16 +234,15 @@ nav {
 }
 
 .product-info h3 {
-    font-size: 0.9rem;
-    margin-bottom: 5px;
+    font-size: 0.85rem;
     height: 35px;
     overflow: hidden;
+    margin-bottom: 5px;
 }
 
 .product-price {
     color: var(--primary);
     font-weight: bold;
-    margin-bottom: 10px;
 }
 
 .btn-sm {
@@ -229,12 +256,34 @@ nav {
     cursor: pointer;
 }
 
+.btn-order {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 18px;
+    width: 100%;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-2gis {
+    background: #00AA00;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+}
+
 .section-title {
     font-family: 'Marck Script', cursive;
     font-size: 2.5rem;
     color: var(--primary);
     text-align: center;
-    margin: 40px 0 20px;
+    margin: 30px 0 15px;
 }
 
 .info-card {
@@ -242,11 +291,8 @@ nav {
     padding: 20px;
     border-radius: 15px;
     border: 1px solid var(--glass-border);
-    margin: 0 10px 20px;
+    margin: 10px;
 }
-
-
-/* КОМПАКТНАЯ КОРЗИНА */
 
 .cart-item {
     display: flex;
@@ -283,6 +329,7 @@ nav {
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
+    animation: fall linear forwards;
 }
 
 @keyframes fall {

@@ -7,11 +7,18 @@
     <title>Pai Pai | Доставка Алматы</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=12.0">
+    <link rel="stylesheet" href="style.css?v=14.0">
 </head>
 
 <body>
-    <video autoplay muted loop playsinline id="bg-video">
+    <div id="preloader">
+        <div class="loader-content">
+            <h2 style="font-family: 'Marck Script', cursive; color: #c48c5d; font-size: 3rem;">Pai Pai</h2>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <video autoplay muted loop playsinline id="bg-video" poster="https://img.freepik.com/free-photo/dark-surface-with-bokeh-lights_23-2148786144.jpg">
         <source src="267591_small.mp4" type="video/mp4">
     </video>
 
@@ -57,23 +64,16 @@
             <div class="menu-grid" id="menu-container"></div>
         </section>
 
-        <section id="about">
-            <h2 class="section-title">О Нас</h2>
-            <div class="info-card">
-                <p style="text-align: center; line-height: 1.6;">Мы готовим только из свежих продуктов Алматинского региона. Pai Pai — это домашний уют и ресторанное качество.</p>
-            </div>
-        </section>
-
         <section id="location">
             <h2 class="section-title">Контакты</h2>
             <div class="info-card" style="text-align: center;">
                 <p style="margin-bottom: 20px;"><i class="fas fa-map-marker-alt" style="color:var(--primary)"></i> Алматы, Казахстан</p>
-                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" style="background: #00AA00; color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s;">
+                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" class="btn-2gis">
                     <i class="fas fa-location-arrow"></i> ОТКРЫТЬ В 2ГИС
                 </a>
                 <div style="display: flex; justify-content: center; gap: 30px; margin-top: 25px;">
                     <a href="https://wa.me/77052363788" target="_blank" style="color:#25d366; font-size: 2.5rem;"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" style="color:white; font-size: 2.5rem;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" target="_blank" style="color:white; font-size: 2.5rem;"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </section>
@@ -81,7 +81,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="script.js?v=12.0"></script>
+    <script src="script.js?v=14.0"></script>
 </body>
 
 </html>
