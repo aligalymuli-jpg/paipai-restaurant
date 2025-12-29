@@ -22,7 +22,8 @@
         }
         
         input,
-        select {
+        select,
+        textarea {
             width: 100%;
             padding: 12px;
             margin: 8px 0;
@@ -31,6 +32,11 @@
             border: 1px solid #444;
             border-radius: 10px;
             font-size: 1rem;
+        }
+        
+        textarea {
+            height: 80px;
+            resize: none;
         }
         
         .upload-area {
@@ -71,7 +77,6 @@
 </head>
 
 <body>
-
     <div id="login-form" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
         <div class="admin-box" style="text-align: center;">
             <h2 style="font-family: 'Marck Script', cursive; color: #c48c5d; font-size: 2.5rem;">Админка</h2>
@@ -86,11 +91,11 @@
                 <a href="index.html" style="color:#c48c5d; text-decoration: none;">← На сайт</a>
                 <button onclick="location.reload()" style="background:none; border:none; color:#666;">Обновить</button>
             </div>
-
             <h2 style="margin: 20px 0;">Новое блюдо</h2>
             <input type="text" id="p-name" placeholder="Название (например: Плов)">
             <input type="number" id="p-price" placeholder="Цена (тг)">
-
+            <textarea id="p-desc" placeholder="Состав блюда..."></textarea>
+            <input type="text" id="p-count" placeholder="Количество (например: на 5-6 чел)">
             <select id="p-cat">
                 <option value="first">Первые блюда</option>
                 <option value="second">Вторые блюда</option>
@@ -100,15 +105,12 @@
                 <option value="semi">Полуфабрикаты</option>
                 <option value="coffee">Напитки</option>
             </select>
-
             <label class="upload-area">
                 <input type="file" id="p-file" accept="image/*" style="display:none;" onchange="showPreview(this)">
                 <span id="upload-label">📸 Выбрать фото из галереи</span>
                 <img id="img-preview">
             </label>
-
             <button id="add-btn" onclick="saveProduct()" class="btn-sm" style="height: 55px; font-size: 1.1rem; margin-top: 10px; width: 100%;">Опубликовать блюдо</button>
-
             <h3 style="margin-top: 40px; color: #c48c5d; border-bottom: 1px solid #333; padding-bottom: 10px;">Текущее меню:</h3>
             <div id="product-list"></div>
         </div>
@@ -116,7 +118,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDU7Q6LOha4gIBz6HoHyx3Nx7LwWi4dSls",
@@ -126,8 +127,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
-        // ТВOЙ КЛЮЧ УЖЕ ЗДЕСЬ
         const imgbbKey = "19b2ea0cacae4c9328806e4c678db140";
 
         function login() {
@@ -155,54 +154,46 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-
         async function saveProduct() {
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
+            const desc = document.getElementById('p-desc').value;
+            const count = document.getElementById('p-count').value;
             const cat = document.getElementById('p-cat').value;
             const file = document.getElementById('p-file').files[0];
             const btn = document.getElementById('add-btn');
-
             if (!name || !price || !file) {
                 alert("Заполни все поля и выбери фото!");
                 return;
             }
-
             btn.disabled = true;
             btn.innerText = "⏳ Загрузка фото...";
-
             try {
                 const formData = new FormData();
                 formData.append("image", file);
-
-                // 1. Загрузка в ImgBB
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
                     method: "POST",
                     body: formData
                 });
                 const resData = await res.json();
-
                 if (resData.success) {
-                    const url = resData.data.url;
-
-                    // 2. Сохранение в Firebase
                     await db.ref('products').push({
-                        name: name,
+                        name,
                         price: parseInt(price),
-                        img: url,
-                        cat: cat
+                        desc,
+                        count,
+                        img: resData.data.url,
+                        cat
                     });
-
                     alert("✅ Блюдо успешно добавлено!");
                     location.reload();
                 } else {
-                    alert("Ошибка ImgBB: " + resData.error.message);
+                    alert("Ошибка ImgBB");
                     btn.disabled = false;
                 }
             } catch (err) {
-                alert("Ошибка! Проверь интернет или настройки базы.");
+                alert("Ошибка!");
                 btn.disabled = false;
-                btn.innerText = "Опубликовать блюдо";
             }
         }
 
@@ -213,19 +204,13 @@
                 container.innerHTML = '';
                 if (!data) return;
                 Object.keys(data).forEach(id => {
-                    container.innerHTML += `
-                        <div class="list-item">
-                            <span>${data[id].name}</span>
-                            <button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button>
-                        </div>`;
+                    container.innerHTML += `<div class="list-item"><span>${data[id].name}</span><button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button></div>`;
                 });
             });
         }
 
         function deleteItem(id) {
-            if (confirm("Удалить блюдо?")) {
-                db.ref('products/' + id).remove();
-            }
+            if (confirm("Удалить блюдо?")) db.ref('products/' + id).remove();
         }
     </script>
 </body>

@@ -6,39 +6,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Корзина | Pai Pai</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=11.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=30.0">
+    <style>
+        /* Минималистичные стили для корзины */
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 12px;
+        }
+        
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        
+        .cart-item-info {
+            flex-grow: 1;
+        }
+        
+        .cart-item-info h4 {
+            font-size: 0.85rem;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+        
+        .cart-item-info p {
+            color: #c48c5d;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin: 2px 0 0 0;
+        }
+        
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 2px;
+            gap: 8px;
+        }
+        
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: #c48c5d;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qty-val {
+            font-size: 0.85rem;
+            min-width: 15px;
+            text-align: center;
+        }
+        
+        #total-box {
+            background: #111;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            border-top: 1px solid #c48c5d;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 
-<body>
-    <video autoplay muted loop playsinline id="bg-video">
-        <source src="267591_small.mp4" type="video/mp4">
-    </video>
-
-    <header>
-        <nav>
-            <div class="brand" style="font-family: 'Marck Script', cursive; font-size: 1.8rem;">Моя <span>Корзина</span> 🎄</div>
-            <a href="index.html" style="color:white; font-size:1.5rem;"><i class="fas fa-times"></i></a>
+<body style="padding-bottom: 150px;">
+    <header style="position: static; background: none;">
+        <nav style="padding: 20px;">
+            <a href="index.html" style="color: white; text-decoration: none; font-size: 1.2rem;">
+                <i class="fas fa-chevron-left"></i> Назад
+            </a>
+            <div class="brand" style="font-family: 'Marck Script';">Твоя <span>Корзина</span></div>
         </nav>
     </header>
 
-    <main class="wrapper" style="margin-top: 120px; padding: 0 20px;">
+    <div class="wrapper">
         <div id="cart-content">
         </div>
+    </div>
 
-        <div id="cart-footer" style="display: none; margin-top: 30px;">
-            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #c48c5d;">
-                <h3 id="total-price" style="font-size: 1.5rem;">Итого: 0 ₸</h3>
+    <div id="cart-footer" style="display: none;">
+        <div id="total-box">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <span style="opacity: 0.7;">Общая сумма:</span>
+                <span id="total-price" style="font-weight: 800; color: #c48c5d; font-size: 1.3rem;">0 ₸</span>
             </div>
-            <button onclick="sendOrder()" style="background: #c48c5d; color: white; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; margin-top: 15px; cursor: pointer; font-size: 1rem;">
-                ЗАКАЗАТЬ В WHATSAPP
+            <button onclick="sendOrder()" class="btn-sm" style="height: 55px; font-size: 1rem;">
+                <i class="fab fa-whatsapp"></i> ОФОРМИТЬ В WHATSAPP
             </button>
         </div>
-    </main>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="script.js?v=11.0"></script>
+    <script src="script.js?v=30.0"></script>
 </body>
 
 </html>

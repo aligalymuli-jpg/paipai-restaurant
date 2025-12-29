@@ -3,27 +3,30 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pai Pai | Доставка Алматы</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pai Pai | Доставка еды Алматы</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=14.0">
+    <link rel="stylesheet" href="style.css?v=25.0">
 </head>
 
 <body>
     <div id="preloader">
         <div class="loader-content">
-            <h2 style="font-family: 'Marck Script', cursive; color: #c48c5d; font-size: 3rem;">Pai Pai</h2>
+            <h2 style="font-family: 'Marck Script', cursive; color: #c48c5d; font-size: 3.5rem; margin-bottom: 20px;">Pai Pai</h2>
             <div class="spinner"></div>
+            <p style="margin-top: 20px; letter-spacing: 3px; font-size: 0.8rem; opacity: 0.6;">ЗАГРУЗКА МЕНЮ...</p>
         </div>
     </div>
 
-    <video autoplay muted loop playsinline id="bg-video" poster="https://img.freepik.com/free-photo/dark-surface-with-bokeh-lights_23-2148786144.jpg">
+    <video autoplay muted loop playsinline id="bg-video">
         <source src="267591_small.mp4" type="video/mp4">
     </video>
 
     <header>
         <div class="header-garland">
+            <div class="bulb"></div>
+            <div class="bulb"></div>
             <div class="bulb"></div>
             <div class="bulb"></div>
             <div class="bulb"></div>
@@ -44,15 +47,19 @@
     </header>
 
     <section class="hero">
-        <h1>Pai Pai</h1>
-        <p>Вкус Алматы в каждом заказе</p>
+        <div class="hero-content">
+            <h1>Pai Pai</h1>
+            <div class="hero-line"></div>
+            <p>Вкус Алматы в каждом заказе</p>
+        </div>
     </section>
 
     <main class="wrapper">
         <section id="menu-section">
             <h2 class="section-title">Наше Меню</h2>
+
             <div class="categories">
-                <button class="cat-btn active" onclick="filterMenu('all')">Все</button>
+                <button class="cat-btn active" onclick="filterMenu('all')">Все блюда</button>
                 <button class="cat-btn" onclick="filterMenu('first')">Первые</button>
                 <button class="cat-btn" onclick="filterMenu('second')">Вторые</button>
                 <button class="cat-btn" onclick="filterMenu('bakery')">Выпечка</button>
@@ -61,27 +68,56 @@
                 <button class="cat-btn" onclick="filterMenu('semi')">Полуфабрикаты</button>
                 <button class="cat-btn" onclick="filterMenu('coffee')">Напитки</button>
             </div>
-            <div class="menu-grid" id="menu-container"></div>
+
+            <div class="menu-grid" id="menu-container">
+            </div>
         </section>
 
         <section id="location">
-            <h2 class="section-title">Контакты</h2>
-            <div class="info-card" style="text-align: center;">
-                <p style="margin-bottom: 20px;"><i class="fas fa-map-marker-alt" style="color:var(--primary)"></i> Алматы, Казахстан</p>
+            <h2 class="section-title">Как нас найти</h2>
+            <div class="info-card">
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p>г. Алматы, работаем на доставку и самовывоз</p>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <p>Ежедневно: 10:00 — 22:00</p>
+                </div>
                 <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" class="btn-2gis">
                     <i class="fas fa-location-arrow"></i> ОТКРЫТЬ В 2ГИС
                 </a>
-                <div style="display: flex; justify-content: center; gap: 30px; margin-top: 25px;">
-                    <a href="https://wa.me/77052363788" target="_blank" style="color:#25d366; font-size: 2.5rem;"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" target="_blank" style="color:white; font-size: 2.5rem;"><i class="fab fa-instagram"></i></a>
+                <div class="social-links">
+                    <a href="https://wa.me/77052363788" class="social-icon wa"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://instagram.com/" class="social-icon ig"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </section>
     </main>
 
+    <div id="productModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-card">
+            <span class="close-btn" onclick="document.getElementById('productModal').style.display='none'">&times;</span>
+            <img id="modalImg" src="">
+            <div class="modal-info">
+                <h2 id="modalName"></h2>
+                <div id="modalCount"></div>
+                <p id="modalDesc"></p>
+                <div class="modal-footer-flex">
+                    <span id="modalPrice"></span>
+                    <button id="modalAddBtn" class="btn-sm">В КОРЗИНУ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px 20px; opacity: 0.5; font-size: 0.8rem;">
+        <p>&copy; 2024 Pai Pai Almaty. Все права защищены.</p>
+    </footer>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="script.js?v=14.0"></script>
+    <script src="script.js?v=25.0"></script>
 </body>
 
 </html>
