@@ -35,7 +35,7 @@ body {
 }
 
 
-/* Прелоадер */
+/* ИСПРАВЛЕННЫЙ ПРЕЛОАДЕР */
 
 #preloader {
     position: fixed;
@@ -51,13 +51,28 @@ body {
     transition: 0.8s;
 }
 
+
+/* Контейнер внутри прелоадера (чтобы всё было в центре) */
+
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    /* Элементы строго друг под другом */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(196, 140, 93, 0.1);
-    border-top: 3px solid var(--primary);
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(196, 140, 93, 0.1);
+    border-top: 4px solid var(--primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
+    margin: 20px 0;
+    /* Отступ между заголовком и текстом */
 }
 
 @keyframes spin {
@@ -67,7 +82,7 @@ body {
 }
 
 
-/* Шапка и гирлянда */
+/* Шапка */
 
 header {
     position: fixed;
@@ -158,7 +173,7 @@ nav {
 }
 
 
-/* Меню (Сетка как ты любишь) */
+/* Меню */
 
 .wrapper {
     max-width: 1200px;
@@ -378,7 +393,7 @@ nav {
 }
 
 
-/* Твои контакты */
+/* Контакты */
 
 .info-card {
     background: var(--glass);
@@ -430,13 +445,4 @@ nav {
 
 .ig {
     color: #e4405f;
-}
-
-
-/* Снег */
-
-@keyframes fall {
-    to {
-        transform: translateY(105vh);
-    }
 }
