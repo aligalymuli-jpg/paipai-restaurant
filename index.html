@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pai Pai | Доставка</title>
+    <title>Pai Pai | Доставка Алматы</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=5.0">
+    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=12.0">
 </head>
 
 <body>
@@ -17,6 +17,7 @@
 
     <header>
         <div class="header-garland">
+            <div class="bulb"></div>
             <div class="bulb"></div>
             <div class="bulb"></div>
             <div class="bulb"></div>
@@ -37,40 +38,42 @@
 
     <section class="hero">
         <h1>Pai Pai</h1>
-        <p>Уют и вкус в каждом моменте</p>
-        <a href="#menu-section" style="margin-top:20px; color:var(--primary); text-decoration:none;">Листайте вниз ↓</a>
+        <p>Вкус Алматы в каждом заказе</p>
     </section>
 
     <main class="wrapper">
         <section id="menu-section">
-            <h2 class="section-title">Меню</h2>
+            <h2 class="section-title">Наше Меню</h2>
             <div class="categories">
                 <button class="cat-btn active" onclick="filterMenu('all')">Все</button>
                 <button class="cat-btn" onclick="filterMenu('first')">Первые</button>
                 <button class="cat-btn" onclick="filterMenu('second')">Вторые</button>
+                <button class="cat-btn" onclick="filterMenu('bakery')">Выпечка</button>
                 <button class="cat-btn" onclick="filterMenu('salad')">Салаты</button>
+                <button class="cat-btn" onclick="filterMenu('group')">На компанию</button>
+                <button class="cat-btn" onclick="filterMenu('semi')">Полуфабрикаты</button>
                 <button class="cat-btn" onclick="filterMenu('coffee')">Напитки</button>
             </div>
             <div class="menu-grid" id="menu-container"></div>
         </section>
 
-        <section id="about" style="margin-top: 50px;">
-            <h2 class="section-title">Наша история</h2>
+        <section id="about">
+            <h2 class="section-title">О Нас</h2>
             <div class="info-card">
-                <p>Мы создаем Pai Pai как место, где каждый чувствует себя как дома. Только свежие ингредиенты и любовь к своему делу.</p>
+                <p style="text-align: center; line-height: 1.6;">Мы готовим только из свежих продуктов Алматинского региона. Pai Pai — это домашний уют и ресторанное качество.</p>
             </div>
         </section>
 
-        <section id="contacts" style="margin-top: 50px; padding-bottom: 50px;">
-            <h2 class="section-title">Где мы?</h2>
+        <section id="location">
+            <h2 class="section-title">Контакты</h2>
             <div class="info-card" style="text-align: center;">
-                <p>Алматы, Казахстан</p>
-                <iframe class="small-map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d186126.88340242402!2d76.71183184651034!3d43.217319958931134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38836e7d16c5cbab%3A0x3d44668fad986d76!2z0JDQu9C80LDRgtGLLCDQmtCw0LfQsNGF0YHRgtCw0L0!5e0!3m2!1sru!2skz!4v1700000000000!5m2!1sru!2skz"
-                    allowfullscreen="" loading="lazy"></iframe>
-
-                <div style="display: flex; justify-content: center; gap: 20px; font-size: 1.5rem; margin-top: 15px;">
-                    <a href="#" style="color:white;"><i class="fab fa-instagram"></i></a>
-                    <a href="https://wa.me/77052363788" style="color:#25d366;"><i class="fab fa-whatsapp"></i></a>
+                <p style="margin-bottom: 20px;"><i class="fas fa-map-marker-alt" style="color:var(--primary)"></i> Алматы, Казахстан</p>
+                <a href="https://2gis.kz/almaty/firm/70000001087430743" target="_blank" style="background: #00AA00; color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s;">
+                    <i class="fas fa-location-arrow"></i> ОТКРЫТЬ В 2ГИС
+                </a>
+                <div style="display: flex; justify-content: center; gap: 30px; margin-top: 25px;">
+                    <a href="https://wa.me/77052363788" target="_blank" style="color:#25d366; font-size: 2.5rem;"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" style="color:white; font-size: 2.5rem;"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </section>
@@ -78,7 +81,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="script.js?v=5.0"></script>
+    <script src="script.js?v=12.0"></script>
 </body>
 
 </html>

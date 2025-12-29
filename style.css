@@ -16,10 +16,8 @@ body {
     background: var(--dark);
     color: white;
     overflow-x: hidden;
+    scroll-behavior: smooth;
 }
-
-
-/* ФОНОВОЕ ВИДЕО */
 
 #bg-video {
     position: fixed;
@@ -32,9 +30,6 @@ body {
     object-fit: cover;
 }
 
-
-/* ШАПКА - МИНИМАЛИЗМ И УЮТ */
-
 header {
     position: fixed;
     top: 15px;
@@ -42,16 +37,13 @@ header {
     transform: translateX(-50%);
     width: 90%;
     max-width: 500px;
-    background: rgba(15, 15, 15, 0.9);
+    background: rgba(15, 15, 15, 0.95);
     backdrop-filter: blur(15px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     z-index: 1000;
     padding: 20px 15px;
 }
-
-
-/* ГИРЛЯНДА В ЗАГОЛОВКЕ */
 
 .header-garland {
     position: absolute;
@@ -132,18 +124,6 @@ nav {
     border-radius: 50%;
 }
 
-
-/* ОБЩИЙ КОНТЕЙНЕР */
-
-.wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-
-/* ЭКРАН ПРИВЕТСТВИЯ */
-
 .hero {
     height: 100vh;
     display: flex;
@@ -156,55 +136,55 @@ nav {
 .hero h1 {
     font-family: 'Marck Script', cursive;
     font-size: 4rem;
-    margin-bottom: 10px;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    opacity: 0.8;
-}
-
-.section-title {
-    font-family: 'Marck Script', cursive;
-    font-size: 2.2rem;
-    color: var(--primary);
-    text-align: center;
-    margin: 40px 0 20px;
+    color: white;
 }
 
 
-/* КАТЕГОРИИ (ВОЗВРАЩЕНЫ) */
+/* КАТЕГОРИИ - ТЕПЕРЬ ПО ЦЕНТРУ */
 
 .categories {
     display: flex;
     overflow-x: auto;
+    justify-content: center;
     gap: 10px;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
+    padding: 15px 5px;
+    margin-bottom: 25px;
+    scrollbar-width: none;
+}
+
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .categories {
+        justify-content: flex-start;
+        padding: 15px 20px;
+    }
 }
 
 .cat-btn {
     background: var(--glass);
     border: 1px solid var(--glass-border);
     color: white;
-    padding: 8px 15px;
-    border-radius: 15px;
+    padding: 10px 20px;
+    border-radius: 25px;
     white-space: nowrap;
     cursor: pointer;
+    transition: 0.3s;
     font-size: 0.9rem;
 }
 
 .cat-btn.active {
     background: var(--primary);
+    border-color: var(--primary);
 }
-
-
-/* КОМПАКТНОЕ МЕНЮ */
 
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
+    padding: 0 10px;
 }
 
 .product-card {
@@ -216,7 +196,7 @@ nav {
 
 .product-card img {
     width: 100%;
-    height: 120px;
+    height: 130px;
     object-fit: cover;
 }
 
@@ -242,37 +222,59 @@ nav {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 7px;
+    padding: 10px;
     width: 100%;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: bold;
-    font-size: 0.8rem;
     cursor: pointer;
 }
 
-
-/* КАРТА И О НАС (УЮТНЫЕ) */
+.section-title {
+    font-family: 'Marck Script', cursive;
+    font-size: 2.5rem;
+    color: var(--primary);
+    text-align: center;
+    margin: 40px 0 20px;
+}
 
 .info-card {
     background: var(--glass);
     padding: 20px;
     border-radius: 15px;
     border: 1px solid var(--glass-border);
-    margin-bottom: 20px;
-    font-size: 0.95rem;
+    margin: 0 10px 20px;
 }
 
-.small-map {
-    width: 100%;
-    height: 200px;
-    /* Сделал карту маленькой */
+
+/* КОМПАКТНАЯ КОРЗИНА */
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
     border-radius: 15px;
-    border: 1px solid var(--primary);
-    margin: 15px 0;
+    margin-bottom: 10px;
+    border: 1px solid var(--glass-border);
 }
 
+.cart-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
+}
 
-/* СНЕЖИНКИ */
+.qty-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+}
 
 .snowflake {
     position: fixed;
