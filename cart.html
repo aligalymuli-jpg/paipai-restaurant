@@ -121,6 +121,24 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="script.js?v=30.0"></script>
+    <div id="orderModal" class="modal-overlay" onclick="closeOrderModal(event)">
+        <div class="modal-card">
+            <span class="close-btn" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
+            <div class="modal-info">
+                <h2 style="color: #c48c5d; margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">Детали доставки</h2>
+
+                <label style="display:block; text-align:left; margin-bottom:5px; font-size:0.8rem; opacity:0.7;">Адрес доставки:</label>
+                <input type="text" id="order-address" placeholder="Улица, дом, квартира" style="margin-bottom: 15px;">
+
+                <label style="display:block; text-align:left; margin-bottom:5px; font-size:0.8rem; opacity:0.7;">Количество персон (приборы):</label>
+                <input type="number" id="order-persons" value="1" min="1" style="margin-bottom: 20px;">
+
+                <button onclick="confirmAndSendOrder()" class="btn-sm" style="width: 100%; height: 55px; font-size: 1.1rem;">
+                ПОДТВЕРДИТЬ И ОТПРАВИТЬ
+            </button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

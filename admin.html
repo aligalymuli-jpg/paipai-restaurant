@@ -7,8 +7,6 @@
     <title>Админка | Pai Pai</title>
     <link rel="stylesheet" href="style.css?v=18.0">
     <style>
-        /* Изначально скрываем контент полностью */
-        
         #admin-content {
             display: none;
             padding: 20px;
@@ -102,15 +100,11 @@
         const db = firebase.database();
         const imgbbKey = "19b2ea0cacae4c9328806e4c678db140";
 
-        // ТА САМАЯ ФУНКЦИЯ ЗАЩИТЫ
         function login() {
             const pass = document.getElementById('admin-pass').value;
             db.ref('admin_settings/pass').once('value').then(s => {
                 if (pass === s.val()) {
-                    // 1. Полностью удаляем форму логина из кода
                     document.getElementById('login-form').remove();
-
-                    // 2. Генерируем интерфейс админки прямо в JS
                     const content = document.getElementById('admin-content');
                     content.style.display = 'block';
                     content.innerHTML = `
@@ -124,6 +118,8 @@
                             <input type="number" id="p-price" placeholder="Цена (тг)">
                             <textarea id="p-desc" placeholder="Состав блюда..."></textarea>
                             <input type="text" id="p-count" placeholder="Количество (например: на 5-6 чел)">
+                            
+                            <label style="color: #c48c5d; font-size: 0.9rem;">Категория:</label>
                             <select id="p-cat">
                                 <option value="first">Первые блюда</option>
                                 <option value="second">Вторые блюда</option>
@@ -132,18 +128,30 @@
                                 <option value="group">На компанию</option>
                                 <option value="semi">Полуфабрикаты</option>
                                 <option value="coffee">Напитки</option>
+                                <option value="dessert">Десерты</option>
+                                <option value="sauce">Соусы/Хлеб</option>
+                                <option value="dishes">Посуда</option>
                             </select>
+
+                            <label style="color: #c48c5d; font-size: 0.9rem;">Специальный статус (бейдж):</label>
+                            <select id="product-badge">
+                                <option value="">Без бейджа</option>
+                                <option value="hit">ХИТ 🔥</option>
+                                <option value="new">НОВИНКА ✨</option>
+                            </select>
+
                             <label class="upload-area">
                                 <input type="file" id="p-file" accept="image/*" style="display:none;" onchange="showPreview(this)">
                                 <span id="upload-label">📸 Выбрать фото из галереи</span>
                                 <img id="img-preview">
                             </label>
+
                             <button id="add-btn" onclick="saveProduct()" class="btn-sm" style="height: 55px; font-size: 1.1rem; margin-top: 10px; width: 100%;">Опубликовать блюдо</button>
+                            
                             <h3 style="margin-top: 40px; color: #c48c5d; border-bottom: 1px solid #333; padding-bottom: 10px;">Текущее меню:</h3>
                             <div id="product-list"></div>
                         </div>
                     `;
-                    // 3. Только теперь разрешаем загрузку списка
                     fetchList();
                 } else {
                     alert("Неверный пароль!");
@@ -165,47 +173,66 @@
         }
 
         async function saveProduct() {
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const desc = document.getElementById('p-desc').value;
-            const count = document.getElementById('p-count').value;
-            const cat = document.getElementById('p-cat').value;
-            const file = document.getElementById('p-file').files[0];
+            const nameInput = document.getElementById('p-name');
+            const priceInput = document.getElementById('p-price');
+            const descInput = document.getElementById('p-desc');
+            const countInput = document.getElementById('p-count');
+            const catInput = document.getElementById('p-cat');
+            const badgeInput = document.getElementById('product-badge');
+            const fileInput = document.getElementById('p-file');
             const btn = document.getElementById('add-btn');
 
-            if (!name || !price || !file) {
+            if (!nameInput.value || !priceInput.value || !fileInput.files[0]) {
                 alert("Заполни все поля и выбери фото!");
                 return;
             }
+
             btn.disabled = true;
             btn.innerText = "⏳ Загрузка фото...";
 
             try {
                 const formData = new FormData();
-                formData.append("image", file);
+                formData.append("image", fileInput.files[0]);
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
                     method: "POST",
                     body: formData
                 });
                 const resData = await res.json();
+
                 if (resData.success) {
                     await db.ref('products').push({
-                        name,
-                        price: parseInt(price),
-                        desc,
-                        count,
+                        name: nameInput.value,
+                        price: parseInt(priceInput.value),
+                        desc: descInput.value,
+                        count: countInput.value,
                         img: resData.data.url,
-                        cat
+                        cat: catInput.value,
+                        badge: badgeInput.value
                     });
+
                     alert("✅ Блюдо успешно добавлено!");
-                    location.reload();
+
+                    nameInput.value = '';
+                    priceInput.value = '';
+                    descInput.value = '';
+                    countInput.value = '';
+                    fileInput.value = '';
+                    badgeInput.value = '';
+                    document.getElementById('img-preview').style.display = 'none';
+                    document.getElementById('upload-label').innerText = "📸 Выбрать фото из галереи";
+
+                    btn.disabled = false;
+                    btn.innerText = "Опубликовать блюдо";
+
                 } else {
                     alert("Ошибка ImgBB");
                     btn.disabled = false;
+                    btn.innerText = "Опубликовать блюдо";
                 }
             } catch (err) {
-                alert("Ошибка!");
+                alert("Ошибка соединения!");
                 btn.disabled = false;
+                btn.innerText = "Опубликовать блюдо";
             }
         }
 
@@ -213,13 +240,14 @@
             db.ref('products').on('value', s => {
                 const container = document.getElementById('product-list');
                 const data = s.val();
-                if (!container) return; // Защита если элемент еще не создан
+                if (!container) return;
                 container.innerHTML = '';
                 if (!data) return;
                 Object.keys(data).forEach(id => {
+                    const b = data[id].badge ? (data[id].badge === 'hit' ? ' [ХИТ]' : ' [НОВИНКА]') : '';
                     container.innerHTML += `
                         <div class="list-item">
-                            <span>${data[id].name}</span>
+                            <span>${data[id].name} <small style="color: #c48c5d;">${b}</small></span>
                             <button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button>
                         </div>`;
                 });

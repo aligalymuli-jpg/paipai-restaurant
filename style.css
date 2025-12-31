@@ -51,13 +51,9 @@ body {
     transition: 0.8s;
 }
 
-
-/* Контейнер внутри прелоадера (чтобы всё было в центре) */
-
 .loader-content {
     display: flex;
     flex-direction: column;
-    /* Элементы строго друг под другом */
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -72,7 +68,6 @@ body {
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 20px 0;
-    /* Отступ между заголовком и текстом */
 }
 
 @keyframes spin {
@@ -253,9 +248,35 @@ nav {
     object-fit: cover;
 }
 
-.p-tag-count {
+
+/* НОВОЕ: Стили для бейджей ХИТ и НОВИНКА */
+
+.product-badge {
     position: absolute;
     top: 10px;
+    right: 10px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    z-index: 5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+.badge-hit {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+}
+
+.badge-new {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+}
+
+.p-tag-count {
+    position: absolute;
+    bottom: 10px;
     right: 10px;
     background: rgba(0, 0, 0, 0.7);
     color: var(--primary);
@@ -264,6 +285,7 @@ nav {
     font-size: 0.7rem;
     font-weight: bold;
     border: 1px solid var(--primary);
+    z-index: 4;
 }
 
 .product-info {
@@ -445,4 +467,60 @@ nav {
 
 .ig {
     color: #e4405f;
+}
+
+.upsell-section {
+    margin: 20px 0;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(196, 140, 93, 0.3);
+}
+
+.upsell-title {
+    font-size: 0.85rem;
+    color: #c48c5d;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.upsell-list {
+    display: flex;
+    gap: 10px;
+}
+
+.upsell-item {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+.upsell-item:active {
+    transform: scale(0.95);
+    border-color: #28ad21;
+}
+
+.upsell-item img {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.upsell-item span {
+    display: block;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.upsell-item small {
+    color: #c48c5d;
+    font-weight: bold;
+    font-size: 0.75rem;
 }
