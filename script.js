@@ -20,6 +20,9 @@ async function loadData() {
         const data = snapshot.val();
         products = data ? Object.keys(data).map(key => ({...data[key], id: key })) : [];
 
+        // Синхронизируем корзину при загрузке
+        cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
+
         if (document.getElementById('cart-content')) {
             renderCart();
         }
@@ -49,7 +52,6 @@ function startHeavyAssets() {
 }
 
 window.showCategories = function() {
-    // Исправлено: теперь точно найдет по ID
     const catScreen = document.getElementById('categories-screen');
     const menuScreen = document.getElementById('menu-screen');
     if (catScreen) catScreen.style.display = 'flex';
@@ -78,7 +80,6 @@ window.renderMenu = function(category = 'all', filteredData = null) {
     if (!container) return;
 
     container.innerHTML = '';
-    // Проверка и на .category и на .cat (для совместимости)
     const dataToRender = filteredData ? filteredData : (category === 'all' ? products : products.filter(p => p.category === category || p.cat === category));
 
     if (dataToRender.length === 0) {
@@ -148,16 +149,26 @@ window.openDetails = function(id) {
     document.getElementById('productModal').style.display = 'flex';
 };
 
+// --- ДОБАВЛЕНИЕ (СИНХРОННОЕ) ---
 window.addToCart = function(id, btnElement = null) {
+    // ШАГ 1: Перед добавлением подтягиваем актуальную корзину из памяти
+    cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
+
     const p = products.find(i => i.id === id);
     if (!p) return;
+
     const item = cart.find(i => i.id === id);
     if (item) item.qty++;
     else cart.push({ id: p.id, name: p.name, price: parseInt(p.price), img: p.img, qty: 1 });
+
     saveCart();
     updateUI();
 
-    // Красивая анимация кнопки
+    // Если модалка корзины открыта — обновляем её контент
+    if (document.getElementById('cart-content')) {
+        renderCart();
+    }
+
     if (btnElement) {
         const oldText = btnElement.innerHTML;
         btnElement.innerHTML = "<i class='fas fa-check'></i> ДОБАВЛЕНО";
@@ -169,34 +180,69 @@ window.addToCart = function(id, btnElement = null) {
     }
 };
 
+// --- ОБНОВЛЕННЫЙ КРАСИВЫЙ ЗАКАЗ (НОВОГОДНИЙ ВАЙБ) ---
 window.confirmAndSendOrder = function() {
+    // Свежие данные из корзины
+    cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
+
     if (cart.length === 0) {
         alert("Братан, корзина пуста!");
         return;
     }
+
     const address = document.getElementById('order-address').value;
-    const persons = document.getElementById('order-persons').value;
-    if (!address) { alert("Укажите адрес!"); return; }
+    const persons = document.getElementById('order-persons').value || '1';
 
-    let text = "🎄 *НОВЫЙ ЗАКАЗ PAI PAI* \n\n";
-    cart.forEach(item => { text += `• ${item.name} [x${item.qty}] — ${item.price * item.qty} ₸\n`; });
+    if (!address) {
+        alert("Укажите адрес!");
+        return;
+    }
+
+    // Формируем текст. Используем только те эмодзи, которые понимает WhatsApp Web и Mobile одинаково.
+    let text = "🎄 *НОВЫЙ ЗАКАЗ PAI PAI* 🎄\n";
+    text += "==========================\n";
+    text += "❄️ *СОСТАВ ЗАКАЗА:* ❄️\n\n";
+
+    cart.forEach((item, index) => {
+        // Убрал сложные символы веток, оставил точку - это самый надежный вариант
+        text += `${index + 1}. *${item.name}*\n`;
+        text += `   • ${item.qty} шт. x ${item.price} = ${item.price * item.qty} тг\n`;
+    });
+
     let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    text += `\n💰 *ОБЩАЯ СУММА: ${total} ₸*`;
-    text += `\n📍 *Адрес:* ${address}\n👥 *Приборы:* ${persons} чел.`;
 
-    window.location.href = `https://wa.me/77052363788?text=${encodeURIComponent(text)}`;
+    text += "\n==========================\n";
+    text += `✅ *ИТОГО К ОПЛАТЕ: ${total} тг*\n`;
+    text += "==========================\n\n";
+    text += `📍 *АДРЕС:* ${address}\n`;
+    text += `🍴 *ПРИБОРЫ:* ${persons} чел.\n\n`;
+    text += "⛄ _Ждем ваш заказ!_ ✨";
+
+    const phone = "77052363788";
+
+    // ВАЖНЫЙ МОМЕНТ: используем современный способ формирования ссылки
+    const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
+
+    window.open(waUrl, '_blank');
 };
-
 window.renderCart = function() {
     const container = document.getElementById('cart-content');
     const footer = document.getElementById('cart-footer');
     if (!container) return;
+
+    // ВАЖНО: берем свежак из памяти
+    cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
+
     if (cart.length === 0) {
         container.innerHTML = `<div style="text-align:center; padding:80px 20px; opacity:0.5;"><p>Корзина пуста</p></div>`;
         if (footer) footer.style.display = 'none';
         return;
     }
+
     if (footer) footer.style.display = 'block';
+    container.style.maxHeight = 'none';
+    container.style.overflowY = 'visible';
+
     container.innerHTML = '';
     let total = 0;
     cart.forEach((item, index) => {
@@ -215,7 +261,9 @@ window.renderCart = function() {
                 </div>
             </div>`;
     });
-    document.getElementById('total-price').innerText = `Итого: ${total} ₸`;
+
+    const totalElem = document.getElementById('total-price');
+    if (totalElem) totalElem.innerText = `Итого: ${total} ₸`;
 };
 
 window.searchMenu = function() {
@@ -229,7 +277,7 @@ function checkWorkStatus() {
     if (!badge) return;
     const hours = new Date(new Date().getTime() + (5 * 3600000)).getUTCHours();
     if (hours >= 8 && hours < 22) badge.innerHTML = `<span style="color: #2ecc71;"><i class="fas fa-circle"></i> МЫ ОТКРЫТЫ</span>`;
-    else badge.innerHTML = `<span style="color: #e74c3c;"><i class="fas fa-clock"></i> СЕЙЧАС ЗАКРЫТО (Откроемся в 08:00)</span>`;
+    else badge.innerHTML = `<span style="color: #e74c3c;"><i class="fas fa-clock"></i> СЕЙЧАС ЗАКРЫТО</span>`;
 }
 
 window.changeQty = (index, delta) => {
@@ -241,7 +289,10 @@ window.changeQty = (index, delta) => {
 };
 
 window.saveCart = () => localStorage.setItem('pai_pai_cart', JSON.stringify(cart));
+
 window.updateUI = () => {
+    // ВАЖНО: обновляем локальную переменную перед подсчетом
+    cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
     const count = document.getElementById('cart-count');
     if (count) {
         const total = cart.reduce((sum, item) => sum + item.qty, 0);
