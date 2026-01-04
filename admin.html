@@ -107,56 +107,59 @@
                     document.getElementById('login-form').remove();
                     const content = document.getElementById('admin-content');
                     content.style.display = 'block';
-                    content.innerHTML = `
-                        <div class="admin-box">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <a href="index.html" style="color:#c48c5d; text-decoration: none;">← На сайт</a>
-                                <button onclick="location.reload()" style="background:none; border:none; color:#666;">Выйти</button>
-                            </div>
-                            <h2 style="margin: 20px 0;">Новое блюдо</h2>
-                            <input type="text" id="p-name" placeholder="Название (например: Плов)">
-                            <input type="number" id="p-price" placeholder="Цена (тг)">
-                            <textarea id="p-desc" placeholder="Состав блюда..."></textarea>
-                            <input type="text" id="p-count" placeholder="Количество (например: на 5-6 чел)">
-                            
-                            <label style="color: #c48c5d; font-size: 0.9rem;">Категория:</label>
-                            <select id="p-cat">
-                                <option value="first">Первые блюда</option>
-                                <option value="second">Вторые блюда</option>
-                                <option value="bakery">Выпечка</option>
-                                <option value="salad">Салаты</option>
-                                <option value="group">На компанию</option>
-                                <option value="semi">Полуфабрикаты</option>
-                                <option value="coffee">Напитки</option>
-                                <option value="dessert">Десерты</option>
-                                <option value="sauce">Соусы/Хлеб</option>
-                                <option value="dishes">Посуда</option>
-                            </select>
-
-                            <label style="color: #c48c5d; font-size: 0.9rem;">Специальный статус (бейдж):</label>
-                            <select id="product-badge">
-                                <option value="">Без бейджа</option>
-                                <option value="hit">ХИТ 🔥</option>
-                                <option value="new">НОВИНКА ✨</option>
-                            </select>
-
-                            <label class="upload-area">
-                                <input type="file" id="p-file" accept="image/*" style="display:none;" onchange="showPreview(this)">
-                                <span id="upload-label">📸 Выбрать фото из галереи</span>
-                                <img id="img-preview">
-                            </label>
-
-                            <button id="add-btn" onclick="saveProduct()" class="btn-sm" style="height: 55px; font-size: 1.1rem; margin-top: 10px; width: 100%;">Опубликовать блюдо</button>
-                            
-                            <h3 style="margin-top: 40px; color: #c48c5d; border-bottom: 1px solid #333; padding-bottom: 10px;">Текущее меню:</h3>
-                            <div id="product-list"></div>
-                        </div>
-                    `;
+                    renderAdminUI(content);
                     fetchList();
                 } else {
                     alert("Неверный пароль!");
                 }
             });
+        }
+
+        function renderAdminUI(container) {
+            container.innerHTML = `
+                <div class="admin-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <a href="index.html" style="color:#c48c5d; text-decoration: none;">← На сайт</a>
+                        <button onclick="location.reload()" style="background:none; border:none; color:#666;">Выйти</button>
+                    </div>
+                    <h2 style="margin: 20px 0;">Новое блюдо</h2>
+                    <form id="productForm" onsubmit="saveProduct(event)">
+                        <input type="text" id="p-name" placeholder="Название" required>
+                        <input type="number" id="p-price" placeholder="Цена (тг)" required>
+                        <textarea id="p-desc" placeholder="Описание..."></textarea>
+                        <input type="text" id="p-count" placeholder="Кол-во (на 2-3 чел)">
+                        
+                        <label>Категория:</label>
+                        <select id="p-cat">
+                            <option value="first">Первые блюда</option>
+                            <option value="second">Вторые блюда</option>
+                            <option value="bakery">Выпечка</option>
+                            <option value="sets">Сеты и комбо</option>
+                            <option value="semi">Полуфабрикаты</option>
+                            <option value="salad">Салаты</option>
+                            <option value="dessert">Десерты</option>
+                            <option value="sauce">Соусы и хлеб</option>
+                            <option value="drinks">Напитки</option>
+                        </select>
+
+                        <label>Статус:</label>
+                        <select id="product-badge">
+                            <option value="">Без бейджа</option>
+                            <option value="hit">ХИТ 🔥</option>
+                            <option value="new">НОВИНКА ✨</option>
+                        </select>
+
+                        <label class="upload-area">
+                            <input type="file" id="p-file" accept="image/*" style="display:none;" onchange="showPreview(this)">
+                            <span id="upload-label">📸 Выбрать фото</span>
+                            <img id="img-preview">
+                        </label>
+
+                        <button type="submit" id="add-btn" class="btn-sm" style="width: 100%;">Опубликовать</button>
+                    </form>
+                    <h3 style="margin-top: 40px; color:#c48c5d;">Меню:</h3>
+                    <div id="product-list"></div>
+                </div>`;
         }
 
         function showPreview(input) {
@@ -166,29 +169,24 @@
                     const img = document.getElementById('img-preview');
                     img.src = e.target.result;
                     img.style.display = 'block';
-                    document.getElementById('upload-label').innerText = "Фото выбрано ✅";
+                    document.getElementById('upload-label').style.display = 'none';
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        async function saveProduct() {
-            const nameInput = document.getElementById('p-name');
-            const priceInput = document.getElementById('p-price');
-            const descInput = document.getElementById('p-desc');
-            const countInput = document.getElementById('p-count');
-            const catInput = document.getElementById('p-cat');
-            const badgeInput = document.getElementById('product-badge');
-            const fileInput = document.getElementById('p-file');
+        async function saveProduct(event) {
+            event.preventDefault();
             const btn = document.getElementById('add-btn');
+            const fileInput = document.getElementById('p-file');
 
-            if (!nameInput.value || !priceInput.value || !fileInput.files[0]) {
-                alert("Заполни все поля и выбери фото!");
+            if (!fileInput.files[0]) {
+                alert("Выберите фото!");
                 return;
             }
 
             btn.disabled = true;
-            btn.innerText = "⏳ Загрузка фото...";
+            btn.innerText = "⏳ Загрузка...";
 
             try {
                 const formData = new FormData();
@@ -201,38 +199,26 @@
 
                 if (resData.success) {
                     await db.ref('products').push({
-                        name: nameInput.value,
-                        price: parseInt(priceInput.value),
-                        desc: descInput.value,
-                        count: countInput.value,
+                        name: document.getElementById('p-name').value,
+                        price: document.getElementById('p-price').value,
+                        desc: document.getElementById('p-desc').value,
+                        count: document.getElementById('p-count').value,
                         img: resData.data.url,
-                        cat: catInput.value,
-                        badge: badgeInput.value
+                        cat: document.getElementById('p-cat').value,
+                        badge: document.getElementById('product-badge').value
                     });
 
-                    alert("✅ Блюдо успешно добавлено!");
-
-                    nameInput.value = '';
-                    priceInput.value = '';
-                    descInput.value = '';
-                    countInput.value = '';
-                    fileInput.value = '';
-                    badgeInput.value = '';
+                    alert("Успешно добавлено!");
+                    // Очищаем форму БЕЗ перезагрузки
+                    document.getElementById('productForm').reset();
                     document.getElementById('img-preview').style.display = 'none';
-                    document.getElementById('upload-label').innerText = "📸 Выбрать фото из галереи";
-
-                    btn.disabled = false;
-                    btn.innerText = "Опубликовать блюдо";
-
-                } else {
-                    alert("Ошибка ImgBB");
-                    btn.disabled = false;
-                    btn.innerText = "Опубликовать блюдо";
+                    document.getElementById('upload-label').style.display = 'block';
                 }
-            } catch (err) {
-                alert("Ошибка соединения!");
+            } catch (e) {
+                alert("Ошибка при сохранении!");
+            } finally {
                 btn.disabled = false;
-                btn.innerText = "Опубликовать блюдо";
+                btn.innerText = "Опубликовать";
             }
         }
 
@@ -241,21 +227,21 @@
                 const container = document.getElementById('product-list');
                 const data = s.val();
                 if (!container) return;
-                container.innerHTML = '';
-                if (!data) return;
-                Object.keys(data).forEach(id => {
-                    const b = data[id].badge ? (data[id].badge === 'hit' ? ' [ХИТ]' : ' [НОВИНКА]') : '';
-                    container.innerHTML += `
-                        <div class="list-item">
-                            <span>${data[id].name} <small style="color: #c48c5d;">${b}</small></span>
-                            <button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button>
-                        </div>`;
-                });
+                if (!data) {
+                    container.innerHTML = "Пусто";
+                    return;
+                }
+
+                container.innerHTML = Object.keys(data).reverse().map(id => `
+                    <div class="list-item">
+                        <span>${data[id].name} (${data[id].price} ₸)</span>
+                        <button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button>
+                    </div>`).join('');
             });
         }
 
         function deleteItem(id) {
-            if (confirm("Удалить блюдо?")) db.ref('products/' + id).remove();
+            if (confirm("Удалить это блюдо?")) db.ref('products/' + id).remove();
         }
     </script>
 </body>
