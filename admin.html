@@ -73,6 +73,16 @@
             cursor: pointer;
             font-weight: bold;
         }
+        /* Добавил стиль для кнопок управления */
+        
+        .admin-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -100,6 +110,8 @@
         const db = firebase.database();
         const imgbbKey = "19b2ea0cacae4c9328806e4c678db140";
 
+        let editId = null; // Для режима редактирования
+
         function login() {
             const pass = document.getElementById('admin-pass').value;
             db.ref('admin_settings/pass').once('value').then(s => {
@@ -122,7 +134,7 @@
                         <a href="index.html" style="color:#c48c5d; text-decoration: none;">← На сайт</a>
                         <button onclick="location.reload()" style="background:none; border:none; color:#666;">Выйти</button>
                     </div>
-                    <h2 style="margin: 20px 0;">Новое блюдо</h2>
+                    <h2 id="form-title" style="margin: 20px 0;">Новое блюдо</h2>
                     <form id="productForm" onsubmit="saveProduct(event)">
                         <input type="text" id="p-name" placeholder="Название" required>
                         <input type="number" id="p-price" placeholder="Цена (тг)" required>
@@ -156,6 +168,7 @@
                         </label>
 
                         <button type="submit" id="add-btn" class="btn-sm" style="width: 100%;">Опубликовать</button>
+                        <button type="button" id="cancel-edit" onclick="resetForm()" style="display:none; width: 100%; margin-top:10px; background:#333; border:none; color:white; border-radius:10px; height:40px;">Отмена</button>
                     </form>
                     <h3 style="margin-top: 40px; color:#c48c5d;">Меню:</h3>
                     <div id="product-list"></div>
@@ -180,7 +193,8 @@
             const btn = document.getElementById('add-btn');
             const fileInput = document.getElementById('p-file');
 
-            if (!fileInput.files[0]) {
+            // Фото обязательно только для новых блюд
+            if (!editId && !fileInput.files[0]) {
                 alert("Выберите фото!");
                 return;
             }
@@ -189,31 +203,38 @@
             btn.innerText = "⏳ Загрузка...";
 
             try {
-                const formData = new FormData();
-                formData.append("image", fileInput.files[0]);
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
-                    method: "POST",
-                    body: formData
-                });
-                const resData = await res.json();
-
-                if (resData.success) {
-                    await db.ref('products').push({
-                        name: document.getElementById('p-name').value,
-                        price: document.getElementById('p-price').value,
-                        desc: document.getElementById('p-desc').value,
-                        count: document.getElementById('p-count').value,
-                        img: resData.data.url,
-                        cat: document.getElementById('p-cat').value,
-                        badge: document.getElementById('product-badge').value
+                let imgUrl = null;
+                if (fileInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append("image", fileInput.files[0]);
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+                        method: "POST",
+                        body: formData
                     });
-
-                    alert("Успешно добавлено!");
-                    // Очищаем форму БЕЗ перезагрузки
-                    document.getElementById('productForm').reset();
-                    document.getElementById('img-preview').style.display = 'none';
-                    document.getElementById('upload-label').style.display = 'block';
+                    const resData = await res.json();
+                    if (resData.success) imgUrl = resData.data.url;
                 }
+
+                const productData = {
+                    name: document.getElementById('p-name').value,
+                    price: document.getElementById('p-price').value,
+                    desc: document.getElementById('p-desc').value,
+                    count: document.getElementById('p-count').value,
+                    cat: document.getElementById('p-cat').value,
+                    badge: document.getElementById('product-badge').value
+                };
+
+                if (imgUrl) productData.img = imgUrl;
+
+                if (editId) {
+                    await db.ref('products/' + editId).update(productData);
+                    alert("Обновлено!");
+                } else {
+                    productData.available = true;
+                    await db.ref('products').push(productData);
+                    alert("Успешно добавлено!");
+                }
+                resetForm();
             } catch (e) {
                 alert("Ошибка при сохранении!");
             } finally {
@@ -234,9 +255,52 @@
 
                 container.innerHTML = Object.keys(data).reverse().map(id => `
                     <div class="list-item">
-                        <span>${data[id].name} (${data[id].price} ₸)</span>
-                        <button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button>
+                        <span style="${data[id].available === false ? 'text-decoration:line-through; opacity:0.5;' : ''}">${data[id].name} (${data[id].price} ₸)</span>
+                        <div class="admin-controls">
+                            <button style="color: #3498db;" onclick="editItem('${id}')">Ред.</button>
+                            <button style="color: #f1c40f;" onclick="toggleStock('${id}', ${data[id].available !== false})">
+                                ${data[id].available === false ? 'Вернуть' : 'Стоп'}
+                            </button>
+                            <button class="btn-delete" onclick="deleteItem('${id}')">Удалить</button>
+                        </div>
                     </div>`).join('');
+            });
+        }
+
+        window.editItem = function(id) {
+            db.ref('products/' + id).once('value', s => {
+                const p = s.val();
+                editId = id;
+                document.getElementById('p-name').value = p.name;
+                document.getElementById('p-price').value = p.price;
+                document.getElementById('p-desc').value = p.desc || '';
+                document.getElementById('p-count').value = p.count || '';
+                document.getElementById('p-cat').value = p.cat;
+                document.getElementById('product-badge').value = p.badge || '';
+
+                document.getElementById('form-title').innerText = "Редактирование";
+                document.getElementById('add-btn').innerText = "Сохранить изменения";
+                document.getElementById('cancel-edit').style.display = "block";
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        window.resetForm = function() {
+            editId = null;
+            document.getElementById('productForm').reset();
+            document.getElementById('form-title').innerText = "Новое блюдо";
+            document.getElementById('add-btn').innerText = "Опубликовать";
+            document.getElementById('cancel-edit').style.display = "none";
+            document.getElementById('img-preview').style.display = "none";
+            document.getElementById('upload-label').style.display = "block";
+        }
+
+        window.toggleStock = function(id, currentStatus) {
+            db.ref('products/' + id).update({
+                available: !currentStatus
             });
         }
 

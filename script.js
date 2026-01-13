@@ -20,7 +20,6 @@ async function loadData() {
         const data = snapshot.val();
         products = data ? Object.keys(data).map(key => ({...data[key], id: key })) : [];
 
-        // Синхронизируем корзину при загрузке
         cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
 
         if (document.getElementById('cart-content')) {
@@ -31,6 +30,10 @@ async function loadData() {
         hidePreloader();
         checkWorkStatus();
         startHeavyAssets();
+
+        // Обязательно отрисовываем меню
+        renderMenu();
+
     } catch (error) {
         console.error("Ошибка загрузки данных:", error);
         hidePreloader();
@@ -80,7 +83,16 @@ window.renderMenu = function(category = 'all', filteredData = null) {
     if (!container) return;
 
     container.innerHTML = '';
-    const dataToRender = filteredData ? filteredData : (category === 'all' ? products : products.filter(p => p.category === category || p.cat === category));
+
+    // Определяем, админ зашел или нет
+    const isAdmin = window.location.hash === '#admin';
+
+    let dataToRender = filteredData ? filteredData : (category === 'all' ? products : products.filter(p => p.category === category || p.cat === category));
+
+    // Обычные люди не видят стоп-лист, админ видит всё
+    if (!isAdmin) {
+        dataToRender = dataToRender.filter(p => p.available !== false);
+    }
 
     if (dataToRender.length === 0) {
         container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.5; padding: 50px;">В этой категории пока пусто...</p>`;
@@ -94,8 +106,20 @@ window.renderMenu = function(category = 'all', filteredData = null) {
         if (p.badge === 'hit') badgeHTML = `<div class="product-badge badge-hit">ХИТ 🔥</div>`;
         else if (p.badge === 'new') badgeHTML = `<div class="product-badge badge-new">НОВИНКА ✨</div>`;
 
+        // Кнопки управления (появляются только если в адресе есть #admin)
+        const adminControls = isAdmin ? `
+            <div style="display:flex; gap:5px; margin-bottom:10px;">
+                <button onclick="event.stopPropagation(); toggleAvailability('${p.id}', ${p.available !== false})" style="flex:1; background:${p.available === false ? '#2ecc71' : '#e74c3c'}; color:white; border:none; border-radius:5px; padding:5px; font-size:10px;">
+                    ${p.available === false ? 'ВЕРНУТЬ' : 'СТОП'}
+                </button>
+                <button onclick="event.stopPropagation(); editProduct('${p.id}')" style="flex:1; background:#3498db; color:white; border:none; border-radius:5px; padding:5px; font-size:10px;">
+                    РЕД.
+                </button>
+            </div>
+        ` : '';
+
         menuHTML += `
-            <div class="product-card" onclick="openDetails('${p.id}')">
+            <div class="product-card" style="${p.available === false ? 'opacity:0.5; border:1px solid red;' : ''}" onclick="openDetails('${p.id}')">
                 <div class="img-wrapper">
                     <img src="${p.img}" loading="lazy" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Pai+Pai'">
                     ${countTag}
@@ -104,6 +128,7 @@ window.renderMenu = function(category = 'all', filteredData = null) {
                 <div class="product-info">
                     <h3>${p.name}</h3>
                     <div class="product-price">${p.price} ₸</div>
+                    ${adminControls}
                     <button class="btn-sm" onclick="event.stopPropagation(); addToCart('${p.id}', this)">
                         <i class="fas fa-plus"></i> В КОРЗИНУ
                     </button>
@@ -149,9 +174,7 @@ window.openDetails = function(id) {
     document.getElementById('productModal').style.display = 'flex';
 };
 
-// --- ДОБАВЛЕНИЕ (СИНХРОННОЕ) ---
 window.addToCart = function(id, btnElement = null) {
-    // ШАГ 1: Перед добавлением подтягиваем актуальную корзину из памяти
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
 
     const p = products.find(i => i.id === id);
@@ -164,7 +187,6 @@ window.addToCart = function(id, btnElement = null) {
     saveCart();
     updateUI();
 
-    // Если модалка корзины открыта — обновляем её контент
     if (document.getElementById('cart-content')) {
         renderCart();
     }
@@ -180,9 +202,7 @@ window.addToCart = function(id, btnElement = null) {
     }
 };
 
-// --- ОБНОВЛЕННЫЙ КРАСИВЫЙ ЗАКАЗ (НОВОГОДНИЙ ВАЙБ) ---
 window.confirmAndSendOrder = function() {
-    // Свежие данные из корзины
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
 
     if (cart.length === 0) {
@@ -198,13 +218,11 @@ window.confirmAndSendOrder = function() {
         return;
     }
 
-    // Формируем текст. Используем только те эмодзи, которые понимает WhatsApp Web и Mobile одинаково.
     let text = "🎄 *НОВЫЙ ЗАКАЗ PAI PAI* 🎄\n";
     text += "==========================\n";
     text += "❄️ *СОСТАВ ЗАКАЗА:* ❄️\n\n";
 
     cart.forEach((item, index) => {
-        // Убрал сложные символы веток, оставил точку - это самый надежный вариант
         text += `${index + 1}. *${item.name}*\n`;
         text += `   • ${item.qty} шт. x ${item.price} = ${item.price * item.qty} тг\n`;
     });
@@ -218,19 +236,17 @@ window.confirmAndSendOrder = function() {
     text += `🍴 *ПРИБОРЫ:* ${persons} чел.\n\n`;
     text += "⛄ _Ждем ваш заказ!_ ✨";
 
-    const phone = "77052363788";
-
-    // ВАЖНЫЙ МОМЕНТ: используем современный способ формирования ссылки
+    const phone = "77017980717";
     const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
 
     window.open(waUrl, '_blank');
 };
+
 window.renderCart = function() {
     const container = document.getElementById('cart-content');
     const footer = document.getElementById('cart-footer');
     if (!container) return;
 
-    // ВАЖНО: берем свежак из памяти
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
 
     if (cart.length === 0) {
@@ -291,7 +307,6 @@ window.changeQty = (index, delta) => {
 window.saveCart = () => localStorage.setItem('pai_pai_cart', JSON.stringify(cart));
 
 window.updateUI = () => {
-    // ВАЖНО: обновляем локальную переменную перед подсчетом
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
     const count = document.getElementById('cart-count');
     if (count) {
@@ -313,5 +328,24 @@ function initSnow() {
         setTimeout(() => flake.remove(), 7000);
     }, 450);
 }
+
+// === НОВЫЕ ФУНКЦИИ (РЕДАКТИРОВАНИЕ И СТОП-ЛИСТ) ===
+
+window.toggleAvailability = async function(id, currentStatus) {
+    if (confirm("Изменить статус наличия?")) {
+        await database.ref('products/' + id).update({ available: !currentStatus });
+        loadData();
+    }
+};
+
+window.editProduct = function(id) {
+    const p = products.find(item => item.id === id);
+    if (!p) return;
+    const n = prompt("Новое имя:", p.name);
+    const pr = prompt("Новая цена:", p.price);
+    if (n && pr) {
+        database.ref('products/' + id).update({ name: n, price: parseInt(pr) }).then(() => loadData());
+    }
+};
 
 document.addEventListener('DOMContentLoaded', loadData);
