@@ -73,7 +73,6 @@
             cursor: pointer;
             font-weight: bold;
         }
-        /* Добавил стиль для кнопок управления */
         
         .admin-controls button {
             background: none;
@@ -82,6 +81,20 @@
             font-size: 0.9rem;
             margin-left: 10px;
             font-weight: bold;
+        }
+        /* Добавил стили для фильтров */
+        
+        .admin-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+        
+        .admin-filters input,
+        .admin-filters select {
+            margin: 0;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -110,7 +123,7 @@
         const db = firebase.database();
         const imgbbKey = "19b2ea0cacae4c9328806e4c678db140";
 
-        let editId = null; // Для режима редактирования
+        let editId = null;
 
         function login() {
             const pass = document.getElementById('admin-pass').value;
@@ -184,7 +197,28 @@
                         <button type="submit" id="add-btn" class="btn-sm" style="width: 100%;">Опубликовать</button>
                         <button type="button" id="cancel-edit" onclick="resetForm()" style="display:none; width: 100%; margin-top:10px; background:#333; border:none; color:white; border-radius:10px; height:40px;">Отмена</button>
                     </form>
-                    <h3 style="margin-top: 40px; color:#c48c5d;">Меню:</h3>
+
+                    <h3 style="margin-top: 40px; color:#c48c5d; border-top: 1px solid #333; pt-20">Список меню:</h3>
+                    
+                    <div class="admin-filters">
+                        <input type="text" id="admin-search" placeholder="🔍 Поиск по имени..." oninput="fetchList()">
+                        <select id="admin-filter-cat" onchange="fetchList()">
+                            <option value="all">Все категории</option>
+                            <option value="first">Первые блюда</option>
+                            <option value="second">Вторые блюда</option>
+                            <option value="bakery">Выпечка</option>
+                            <option value="salads">Салаты</option>
+                            <option value="sets">Сеты</option>
+                            <option value="semi">Полуфабрикаты</option>
+                            <option value="dessert">Десерты</option>
+                            <option value="drinks">Напитки</option>
+                            <option value="breakfast">Завтраки</option>
+                            <option value="cakes">Торты</option>
+                            <option value="pies">Пироги</option>
+                            <option value="kids">Детское</option>
+                        </select>
+                    </div>
+
                     <div id="product-list"></div>
                 </div>`;
         }
@@ -207,7 +241,6 @@
             const btn = document.getElementById('add-btn');
             const fileInput = document.getElementById('p-file');
 
-            // Фото обязательно только для новых блюд
             if (!editId && !fileInput.files[0]) {
                 alert("Выберите фото!");
                 return;
@@ -258,9 +291,13 @@
             }
         }
 
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ СПИСКА С ФИЛЬТРАЦИЕЙ
         function fetchList() {
             db.ref('products').on('value', s => {
                 const container = document.getElementById('product-list');
+                const searchInput = document.getElementById('admin-search');
+                const filterCat = document.getElementById('admin-filter-cat');
+
                 const data = s.val();
                 if (!container) return;
                 if (!data) {
@@ -268,7 +305,25 @@
                     return;
                 }
 
-                container.innerHTML = Object.keys(data).reverse().map(id => `
+                // Получаем значения фильтров
+                const query = searchInput ? searchInput.value.toLowerCase() : '';
+                const selectedCat = filterCat ? filterCat.value : 'all';
+
+                // Фильтруем ключи (блюда)
+                const keys = Object.keys(data).reverse();
+                const filteredKeys = keys.filter(id => {
+                    const p = data[id];
+                    const matchesSearch = p.name.toLowerCase().includes(query);
+                    const matchesCat = (selectedCat === 'all') || (p.cat === selectedCat || p.category === selectedCat);
+                    return matchesSearch && matchesCat;
+                });
+
+                if (filteredKeys.length === 0) {
+                    container.innerHTML = "<p style='text-align:center; opacity:0.5; padding:20px;'>Ничего не найдено</p>";
+                    return;
+                }
+
+                container.innerHTML = filteredKeys.map(id => `
                     <div class="list-item">
                         <span style="${data[id].available === false ? 'text-decoration:line-through; opacity:0.5;' : ''}">${data[id].name} (${data[id].price} ₸)</span>
                         <div class="admin-controls">
