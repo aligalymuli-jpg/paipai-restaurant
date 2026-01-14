@@ -148,10 +148,24 @@
                             <option value="bakery">Выпечка</option>
                             <option value="sets">Сеты и комбо</option>
                             <option value="semi">Полуфабрикаты</option>
-                            <option value="salad">Салаты</option>
+                            <option value="salads">Салаты</option>
                             <option value="dessert">Десерты</option>
                             <option value="sauce">Соусы и хлеб</option>
                             <option value="drinks">Напитки</option>
+                            <option value="breakfast">Завтраки</option>
+                            <option value="cakes">Торты</option>
+                            <option value="pies">Пироги</option>
+                            <option value="kids">Детское меню</option>
+                        </select>
+
+                        <label>Тип блюда (состав):</label>
+                        <select id="p-type">
+                            <option value="">Без уточнения</option>
+                            <option value="meat">🥩 Из мяса</option>
+                            <option value="chicken">🍗 Из курицы</option>
+                            <option value="dough">🥟 Мучные блюда</option>
+                            <option value="steam">💨 На пару</option>
+                            <option value="veg">🌿 Без мяса</option>
                         </select>
 
                         <label>Статус:</label>
@@ -221,6 +235,7 @@
                     desc: document.getElementById('p-desc').value,
                     count: document.getElementById('p-count').value,
                     cat: document.getElementById('p-cat').value,
+                    type: document.getElementById('p-type').value,
                     badge: document.getElementById('product-badge').value
                 };
 
@@ -276,6 +291,7 @@
                 document.getElementById('p-desc').value = p.desc || '';
                 document.getElementById('p-count').value = p.count || '';
                 document.getElementById('p-cat').value = p.cat;
+                document.getElementById('p-type').value = p.type || '';
                 document.getElementById('product-badge').value = p.badge || '';
 
                 document.getElementById('form-title').innerText = "Редактирование";

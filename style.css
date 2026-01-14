@@ -580,3 +580,25 @@ input:focus {
 .cart-item:hover {
     transform: translateX(5px);
 }
+
+.type-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid rgba(196, 140, 93, 0.3);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.type-btn.active {
+    background: #c48c5d;
+    border-color: #c48c5d;
+    box-shadow: 0 4px 15px rgba(196, 140, 93, 0.4);
+}
+
+.type-btn:hover {
+    background: rgba(196, 140, 93, 0.2);
+}

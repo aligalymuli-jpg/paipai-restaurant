@@ -50,6 +50,11 @@
             <div id="work-status-badge" style="text-align: center; margin-bottom: 25px; font-weight: 600;"></div>
 
             <div class="categories" id="categories-screen">
+                <button class="cat-btn" onclick="filterCat('breakfast', this)">
+    <img src="img/cat_breakfast.webp" alt="Завтраки">
+    <span>Завтраки</span>
+</button>
+
                 <button class="cat-btn" onclick="filterCat('first', this)">
                     <img src="img/cat1.jpg" alt="Первые блюда">
                     <span>Первые блюда</span>
@@ -70,6 +75,11 @@
                     <span>Салаты</span>
                 </button>
 
+                <button class="cat-btn" onclick="filterCat('kids', this)">
+    <img src="img/cat_kids.webp" alt="Детское меню">
+    <span>Детское меню</span>
+</button>
+
                 <button class="cat-btn" onclick="filterCat('sets', this)">
                     <img src="img/cat5.jpg" alt="Сеты и комбо">
                     <span>Сеты и комбо</span>
@@ -84,7 +94,15 @@
                     <img src="img/cat7.jpg" alt="Десерты">
                     <span>Десерты</span>
                 </button>
+                <button class="cat-btn" onclick="filterCat('cakes', this)">
+    <img src="img/cat_cakes.webp" alt="Торты">
+    <span>Торты</span>
+</button>
 
+                <button class="cat-btn" onclick="filterCat('pies', this)">
+    <img src="img/cat_pies.webp" alt="Пироги">
+    <span>Пироги</span>
+</button>
                 <button class="cat-btn" onclick="filterCat('drinks', this)">
                     <img src="img/cat8.jpg" alt="Напитки">
                     <span>Напитки</span>
@@ -101,6 +119,8 @@
                     <i class="fas fa-arrow-left"></i> НАЗАД К КАТЕГОРИЯМ
                 </button>
                 <h3 id="current-category-title" style="text-align: center; color: #c48c5d; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 2px;"></h3>
+
+                <div id="type-filters" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; padding: 0 10px;"></div>
 
                 <div class="search-container" style="max-width: 500px; margin: 0 auto 30px; padding: 0;">
                     <div style="position: relative;">

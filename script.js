@@ -13,6 +13,7 @@ const database = firebase.database();
 
 let products = [];
 let cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
+let currentCategory = 'all'; // Запоминаем текущую категорию
 
 async function loadData() {
     try {
@@ -31,7 +32,6 @@ async function loadData() {
         checkWorkStatus();
         startHeavyAssets();
 
-        // Обязательно отрисовываем меню
         renderMenu();
 
     } catch (error) {
@@ -62,6 +62,7 @@ window.showCategories = function() {
 };
 
 window.filterCat = function(cat, btn) {
+    currentCategory = cat; // Сохраняем категорию
     const catScreen = document.getElementById('categories-screen');
     const menuScreen = document.getElementById('menu-screen');
     const title = btn.querySelector('span').innerText;
@@ -74,22 +75,70 @@ window.filterCat = function(cat, btn) {
     const searchInput = document.getElementById('menu-search');
     if (searchInput) searchInput.value = '';
 
+    // Генерируем кнопки фильтров по составу
+    renderTypeFilters(cat);
+
     renderMenu(cat);
     window.scrollTo({ top: document.getElementById('menu-section').offsetTop - 20, behavior: 'smooth' });
 };
+
+// --- НОВАЯ ФУНКЦИЯ ДЛЯ КНОПОК ФИЛЬТРАЦИИ ---
+function renderTypeFilters(cat) {
+    const filterContainer = document.getElementById('type-filters');
+    if (!filterContainer) return;
+    filterContainer.innerHTML = '';
+
+    // Берем все товары этой категории
+    const catProducts = products.filter(p => p.category === cat || p.cat === cat);
+
+    // Смотрим, какие уникальные "типы" есть в этой категории (мясо, мучное и т.д.)
+    const types = [...new Set(catProducts.map(p => p.type).filter(t => t && t !== ""))];
+
+    if (types.length > 0) {
+        // Кнопка "Все"
+        const btnAll = document.createElement('button');
+        btnAll.className = 'type-btn active';
+        btnAll.innerText = 'Все';
+        btnAll.onclick = function() {
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            renderMenu(cat);
+        };
+        filterContainer.appendChild(btnAll);
+
+        // Кнопки для каждого типа
+        const typeNames = {
+            'meat': '🥩 Мясо',
+            'chicken': '🍗 Курица',
+            'dough': '🥟 Мучное',
+            'steam': '💨 На пару',
+            'veg': '🌿 Постное'
+        };
+
+        types.forEach(type => {
+            const btn = document.createElement('button');
+            btn.className = 'type-btn';
+            btn.innerText = typeNames[type] || type;
+            btn.onclick = function() {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const filtered = catProducts.filter(p => p.type === type);
+                renderMenu(null, filtered);
+            };
+            filterContainer.appendChild(btn);
+        });
+    }
+}
 
 window.renderMenu = function(category = 'all', filteredData = null) {
     const container = document.getElementById('menu-container');
     if (!container) return;
 
     container.innerHTML = '';
-
-    // Определяем, админ зашел или нет
     const isAdmin = window.location.hash === '#admin';
 
     let dataToRender = filteredData ? filteredData : (category === 'all' ? products : products.filter(p => p.category === category || p.cat === category));
 
-    // Обычные люди не видят стоп-лист, админ видит всё
     if (!isAdmin) {
         dataToRender = dataToRender.filter(p => p.available !== false);
     }
@@ -106,7 +155,6 @@ window.renderMenu = function(category = 'all', filteredData = null) {
         if (p.badge === 'hit') badgeHTML = `<div class="product-badge badge-hit">ХИТ 🔥</div>`;
         else if (p.badge === 'new') badgeHTML = `<div class="product-badge badge-new">НОВИНКА ✨</div>`;
 
-        // Кнопки управления (появляются только если в адресе есть #admin)
         const adminControls = isAdmin ? `
             <div style="display:flex; gap:5px; margin-bottom:10px;">
                 <button onclick="event.stopPropagation(); toggleAvailability('${p.id}', ${p.available !== false})" style="flex:1; background:${p.available === false ? '#2ecc71' : '#e74c3c'}; color:white; border:none; border-radius:5px; padding:5px; font-size:10px;">
@@ -176,21 +224,14 @@ window.openDetails = function(id) {
 
 window.addToCart = function(id, btnElement = null) {
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
-
     const p = products.find(i => i.id === id);
     if (!p) return;
-
     const item = cart.find(i => i.id === id);
     if (item) item.qty++;
     else cart.push({ id: p.id, name: p.name, price: parseInt(p.price), img: p.img, qty: 1 });
-
     saveCart();
     updateUI();
-
-    if (document.getElementById('cart-content')) {
-        renderCart();
-    }
-
+    if (document.getElementById('cart-content')) renderCart();
     if (btnElement) {
         const oldText = btnElement.innerHTML;
         btnElement.innerHTML = "<i class='fas fa-check'></i> ДОБАВЛЕНО";
@@ -204,41 +245,32 @@ window.addToCart = function(id, btnElement = null) {
 
 window.confirmAndSendOrder = function() {
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
-
     if (cart.length === 0) {
         alert("Братан, корзина пуста!");
         return;
     }
-
     const address = document.getElementById('order-address').value;
     const persons = document.getElementById('order-persons').value || '1';
-
     if (!address) {
         alert("Укажите адрес!");
         return;
     }
-
     let text = "🎄 *НОВЫЙ ЗАКАЗ PAI PAI* 🎄\n";
     text += "==========================\n";
     text += "❄️ *СОСТАВ ЗАКАЗА:* ❄️\n\n";
-
     cart.forEach((item, index) => {
         text += `${index + 1}. *${item.name}*\n`;
         text += `   • ${item.qty} шт. x ${item.price} = ${item.price * item.qty} тг\n`;
     });
-
     let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-
     text += "\n==========================\n";
     text += `✅ *ИТОГО К ОПЛАТЕ: ${total} тг*\n`;
     text += "==========================\n\n";
     text += `📍 *АДРЕС:* ${address}\n`;
     text += `🍴 *ПРИБОРЫ:* ${persons} чел.\n\n`;
     text += "⛄ _Ждем ваш заказ!_ ✨";
-
     const phone = "77017980717";
     const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
-
     window.open(waUrl, '_blank');
 };
 
@@ -246,19 +278,13 @@ window.renderCart = function() {
     const container = document.getElementById('cart-content');
     const footer = document.getElementById('cart-footer');
     if (!container) return;
-
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
-
     if (cart.length === 0) {
         container.innerHTML = `<div style="text-align:center; padding:80px 20px; opacity:0.5;"><p>Корзина пуста</p></div>`;
         if (footer) footer.style.display = 'none';
         return;
     }
-
     if (footer) footer.style.display = 'block';
-    container.style.maxHeight = 'none';
-    container.style.overflowY = 'visible';
-
     container.innerHTML = '';
     let total = 0;
     cart.forEach((item, index) => {
@@ -277,14 +303,13 @@ window.renderCart = function() {
                 </div>
             </div>`;
     });
-
     const totalElem = document.getElementById('total-price');
     if (totalElem) totalElem.innerText = `Итого: ${total} ₸`;
 };
 
 window.searchMenu = function() {
     const query = document.getElementById('menu-search').value.toLowerCase();
-    const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+    const filtered = products.filter(p => p.name.toLowerCase().includes(query) && (currentCategory === 'all' || p.category === currentCategory || p.cat === currentCategory));
     renderMenu(null, filtered);
 };
 
@@ -305,7 +330,6 @@ window.changeQty = (index, delta) => {
 };
 
 window.saveCart = () => localStorage.setItem('pai_pai_cart', JSON.stringify(cart));
-
 window.updateUI = () => {
     cart = JSON.parse(localStorage.getItem('pai_pai_cart')) || [];
     const count = document.getElementById('cart-count');
@@ -328,8 +352,6 @@ function initSnow() {
         setTimeout(() => flake.remove(), 7000);
     }, 450);
 }
-
-// === НОВЫЕ ФУНКЦИИ (РЕДАКТИРОВАНИЕ И СТОП-ЛИСТ) ===
 
 window.toggleAvailability = async function(id, currentStatus) {
     if (confirm("Изменить статус наличия?")) {
