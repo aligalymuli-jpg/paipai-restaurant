@@ -112,6 +112,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDU7Q6LOha4gIBz6HoHyx3Nx7LwWi4dSls",
@@ -125,19 +126,45 @@
 
         let editId = null;
 
-        function login() {
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЛОГИНА
+        // НОВАЯ БЕЗОПАСНАЯ ФУНКЦИЯ ЛОГИНА
+        // ЗАМЕНИ СВОЮ ФУНКЦИЮ login НА ЭТУ
+        async function login() {
             const pass = document.getElementById('admin-pass').value;
-            db.ref('admin_settings/pass').once('value').then(s => {
-                if (pass === s.val()) {
-                    document.getElementById('login-form').remove();
-                    const content = document.getElementById('admin-content');
-                    content.style.display = 'block';
-                    renderAdminUI(content);
-                    fetchList();
+            const adminEmail = "admin@paipai.kz";
+
+            if (!pass) {
+                alert("Введите пароль!");
+                return;
+            }
+
+            try {
+                await firebase.auth().signInWithEmailAndPassword(adminEmail, pass);
+
+                // Если ошибок нет — запускаем админку
+                document.getElementById('login-form').remove();
+                const content = document.getElementById('admin-content');
+                content.style.display = 'block';
+                renderAdminUI(content);
+                fetchList();
+                console.log("Вход выполнен!");
+
+            } catch (e) {
+                console.error("Ошибка входа:", e);
+
+                // РАСШИФРОВКА ОШИБОК ДЛЯ ТЕБЯ
+                if (e.code === 'auth/user-not-found') {
+                    alert("ОШИБКА: Такого пользователя нет!\n\nЗайди в Firebase Console -> Authentication -> Users и нажми 'Add User'.\nEmail: admin@paipai.kz\nПароль: твой пароль");
+                } else if (e.code === 'auth/wrong-password') {
+                    alert("ОШИБКА: Неверный пароль!");
+                } else if (e.code === 'auth/too-many-requests') {
+                    alert("Слишком много попыток. Подожди немного.");
+                } else if (e.code === 'auth/network-request-failed') {
+                    alert("Нет связи с сервером. Проверь интернет или настройки API Key (ограничения домена).");
                 } else {
-                    alert("Неверный пароль!");
+                    alert("Неизвестная ошибка: " + e.message);
                 }
-            });
+            }
         }
 
         function renderAdminUI(container) {
@@ -291,7 +318,6 @@
             }
         }
 
-        // ОБНОВЛЕННАЯ ФУНКЦИЯ СПИСКА С ФИЛЬТРАЦИЕЙ
         function fetchList() {
             db.ref('products').on('value', s => {
                 const container = document.getElementById('product-list');
@@ -305,11 +331,9 @@
                     return;
                 }
 
-                // Получаем значения фильтров
                 const query = searchInput ? searchInput.value.toLowerCase() : '';
                 const selectedCat = filterCat ? filterCat.value : 'all';
 
-                // Фильтруем ключи (блюда)
                 const keys = Object.keys(data).reverse();
                 const filteredKeys = keys.filter(id => {
                     const p = data[id];
